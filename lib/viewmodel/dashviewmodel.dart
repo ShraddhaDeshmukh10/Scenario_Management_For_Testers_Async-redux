@@ -1,8 +1,12 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:scenario_management_tool_for_testers/Actions/add_test_action.dart';
 import 'package:scenario_management_tool_for_testers/Actions/addcomment.dart';
 import 'package:scenario_management_tool_for_testers/Actions/fetchaction.dart';
+import 'package:scenario_management_tool_for_testers/Actions/filterscenario.dart';
+import 'package:scenario_management_tool_for_testers/Actions/uploadimage.dart';
+import 'package:scenario_management_tool_for_testers/Services/response.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/Connnector/dashboard.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/Actions/fetchsenario.dart';
@@ -13,6 +17,9 @@ import 'package:scenario_management_tool_for_testers/main.dart';
 class ViewModel extends Vm {
   final String? designation;
   final List<Map<String, dynamic>> scenarios;
+  List<Map<String, dynamic>> filteredScenarios; // Filtered scenarios
+  final void Function(String filter) filterScenarios;
+  final void Function() clearFilters;
   final Color roleColor;
   final bool isCheckboxEnabled;
   final List<Map<String, dynamic>> assignments;
@@ -24,6 +31,11 @@ class ViewModel extends Vm {
   final void Function(String, Map<String, dynamic>) updateScenario;
   final Function(String?) searchScenarios;
   final void Function(String docId) deleteScenario;
+  final List<Map<String, dynamic>> testCases;
+  final List<Map<String, dynamic>> changeHistory;
+  final DataResponse? response;
+  final void Function(Uint8List fileBytes, String fileName) onUploadImage;
+
   final void Function(
       String project,
       String bugId,
@@ -36,9 +48,16 @@ class ViewModel extends Vm {
       String? tag) addtestcase;
 
   ViewModel({
+    required this.response,
+    required this.onUploadImage,
     required this.addtestcase,
+    required this.testCases,
+    required this.changeHistory,
     required this.deleteScenario,
     required this.scenarios,
+    required this.filteredScenarios,
+    required this.filterScenarios,
+    required this.clearFilters,
     required this.addComment,
     required this.designation,
     required this.assignments,
@@ -50,7 +69,7 @@ class ViewModel extends Vm {
     required this.fetchScenarios,
     required this.updateScenario,
     required this.searchScenarios,
-  }) : super(equals: [scenarios, comments]);
+  }) : super(equals: [scenarios, comments, filteredScenarios, response]);
 
   static ViewModel fromStore(Store<AppState> store) {
     String designation = store.state.designation ?? '';
@@ -68,8 +87,20 @@ class ViewModel extends Vm {
     }
 
     return ViewModel(
+      response: store.state.response,
+      testCases: store.state.testCases,
+      changeHistory: store.state.changeHistory,
       scenarios: store.state.scenarios,
-      assignments: store.state.assignments, // Pass assignments here
+      filteredScenarios: store.state.filteredScenarios ?? store.state.scenarios,
+      filterScenarios: (String filter) {
+        store.dispatch(FilterScenariosAction(filter));
+      },
+      clearFilters: () {
+        store.dispatch(ClearFiltersAction());
+      },
+      onUploadImage: (fileBytes, fileName) =>
+          store.dispatch(UploadImageAction(fileBytes, fileName)),
+      assignments: store.state.assignments,
       designation: store.state.designation,
       addComment: (content, attachment) =>
           store.dispatch(AddCommentAction(content, attachment)),

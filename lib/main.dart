@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
+import 'package:scenario_management_tool_for_testers/Services/locator.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/Connnector/dashboard.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/assignedlist.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/commentlist.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/login.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/registerscreen.dart';
+import 'package:scenario_management_tool_for_testers/View/Screens/Connnector/scenariodetail.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/splash.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/testcaselist.dart';
-import 'package:scenario_management_tool_for_testers/View/testcasedetail.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
@@ -24,6 +22,7 @@ Future<void> main() async {
   );
   await Hive.initFlutter();
   await Hive.openBox('userBox');
+  setupServiceLocator();
   runApp(const MyApp());
 }
 
@@ -55,41 +54,16 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(builder: (_) => const RegisterPage());
               case Routes.dashboard:
                 return MaterialPageRoute(builder: (_) => const DashboardPage());
-              case Routes.assignedlist:
+
+              case Routes.scenariodetail:
                 return MaterialPageRoute(
-                  builder: (_) => AssignedUsersPage(
-                    assignments: args['assignments'] ?? [],
+                  builder: (_) => ScenarioDetailPage(
+                    scenario: args['scenario'],
+                    roleColor: args['roleColor'],
                     designation: args['designation'] ?? '',
-                    roleColor: args['roleColor'] ?? Colors.grey,
                   ),
                 );
-              case Routes.commentlist:
-                return MaterialPageRoute(
-                  builder: (_) => CommentListPage(
-                    comments: args['comments'] ?? [],
-                    designation: args['designation'] ?? '',
-                    roleColor: args['roleColor'] ?? Colors.grey,
-                  ),
-                );
-              case Routes.testcaselist:
-                return MaterialPageRoute(
-                  builder: (_) => TestCaseListPage(
-                    designation: args['designation'] ?? '',
-                    roleColor: args['roleColor'] ?? Colors.grey,
-                  ),
-                );
-              // case Routes.scenariodetail:
-              //   return MaterialPageRoute(
-              //     builder: (_) => const ScenarioDetailPage(
-              //       scenario:args['sce']
-              //     ),
-              //   );
-              case Routes.testdetail:
-                return MaterialPageRoute(
-                    builder: (_) => TestCaseDetailPage(
-                          roleColor: args['roleColor'],
-                          testCase: args['testCase'],
-                        ));
+
               default:
                 return MaterialPageRoute(builder: (_) => const LoginPage());
             }
