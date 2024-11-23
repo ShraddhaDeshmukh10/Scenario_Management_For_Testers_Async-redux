@@ -83,8 +83,9 @@ class ScenarioDetailPage extends StatelessWidget {
                     /// this option is only available to developer and lead tester to track the changes in scenario tastcases.
                     if (designation != 'Junior Tester') ...[
                       // Change history button code
+
                       TextButton(
-                        child: const Text("Show Edit history"),
+                        child: const Text("Show Edit History"),
                         onPressed: () async {
                           final changes =
                               await _fetchChangeHistory(scenario['docId']);
@@ -101,35 +102,50 @@ class ScenarioDetailPage extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           children: changes.map((change) {
                                             final testCaseId =
-                                                change['testCaseId'] ?? 'N/A';
+                                                change['testCaseId'];
                                             final tags =
-                                                (change['tags'] as List<String>)
-                                                    .join(', ');
+                                                change['tags'] as List<String>?;
+                                            final editedBy =
+                                                change['editedBy'] ?? 'Unknown';
+                                            final timestamp = change[
+                                                        'timestamp'] !=
+                                                    null
+                                                ? DateFormat(
+                                                        "dd-MM-yyyy hh:mm a")
+                                                    .format((change['timestamp']
+                                                            as Timestamp)
+                                                        .toDate())
+                                                : null;
 
                                             return Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                    "Test Case ID: $testCaseId"), // Display testCaseId
-                                                Text("Tags: $tags",
+                                                if (testCaseId != null)
+                                                  Text(
+                                                      "Test Case ID: $testCaseId"), // Conditionally show testCaseId
+                                                if (tags != null)
+                                                  Text(
+                                                    "Tags: ${tags.join(', ')}",
                                                     style: TextStyle(
-                                                        color: _getTagColor(
-                                                            change['tags']
-                                                                as List<
-                                                                    dynamic>))),
-
-                                                Text(
-                                                  "Edited By: ${change['editedBy'] ?? 'Unknown'}",
-                                                  style:
-                                                      TextStyle(fontSize: 10),
-                                                ),
-                                                Text(
-                                                  "Edited By: ${(change['timestamp'] != null ? DateFormat("dd-MM-yyyy. hh:mm a").format((change['timestamp'] as Timestamp).toDate()) : 'N/A')}",
-                                                  style:
-                                                      TextStyle(fontSize: 10),
-                                                ),
-
+                                                      color: _getTagColor(tags),
+                                                    ),
+                                                  ), // Conditionally show tags
+                                                if (testCaseId != null ||
+                                                    tags != null) ...[
+                                                  if (editedBy.isNotEmpty)
+                                                    Text(
+                                                      "Edited By: $editedBy",
+                                                      style: TextStyle(
+                                                          fontSize: 10),
+                                                    ), // Conditionally show editedBy
+                                                  if (timestamp != null)
+                                                    Text(
+                                                      "Timestamp: $timestamp",
+                                                      style: TextStyle(
+                                                          fontSize: 10),
+                                                    ), // Conditionally show timestamp
+                                                ],
                                                 Divider(),
                                               ],
                                             );
@@ -152,7 +168,7 @@ class ScenarioDetailPage extends StatelessWidget {
                   ],
                 ),
                 const Divider(),
-                SizedBox(height: 8),
+
                 Card(
                   child: Column(
                     children: [
@@ -204,52 +220,185 @@ class ScenarioDetailPage extends StatelessWidget {
                                 .format(createdAt.toDate())
                             : 'N/A';
 
+                        /// Controllers for the editable fields
+                        final descriptionController = TextEditingController(
+                            text: testCase['description'] ?? '');
+                        final commentsController = TextEditingController(
+                            text: testCase['comments'] ?? '');
+                        String? selectedTag =
+                            testCase['tags']?.isNotEmpty ?? false
+                                ? (testCase['tags'] is List
+                                    ? testCase['tags'][0]
+                                    : testCase['tags'])
+                                : null;
+
+                        // Dropdown options for tags
+                        final tagsOptions = designation == 'Junior Tester'
+                            ? ["Passed", "Failed", "In Review"]
+                            : ["Passed", "Failed", "In Review", "Completed"];
+
+                        if (selectedTag != null &&
+                            !tagsOptions.contains(selectedTag)) {
+                          selectedTag =
+                              tagsOptions.isNotEmpty ? tagsOptions[0] : null;
+                        }
+
                         return Card(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    "Test Case Name: ${testCase['name'] ?? 'N/A'}",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Row with save, edit, and delete icons
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "Test Case Name: ${testCase['name'] ?? 'N/A'}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    color: Colors.blue,
-                                    icon: const Icon(Icons.edit),
-                                    onPressed: () =>
-                                        _editTestCase(context, testCase),
-                                  ),
-                                  if (designation != 'Junior Tester')
                                     IconButton(
-                                      color: Colors.red,
-                                      icon: const Icon(Icons.delete),
-                                      onPressed: () => _deleteTestCase(
-                                          testCase['docId'], testCase),
+                                      color: Colors.blue,
+                                      icon: const Icon(Icons.save),
+                                      onPressed: () async {
+                                        final description =
+                                            descriptionController.text;
+                                        final comments =
+                                            commentsController.text;
+                                        final tags = selectedTag != null
+                                            ? [selectedTag]
+                                            : [];
+
+                                        if (description.isEmpty) {
+                                          Fluttertoast.showToast(
+                                            msg: "Description cannot be empty!",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0,
+                                          );
+                                          return;
+                                        }
+
+                                        try {
+                                          // Update the test case document
+                                          await FirebaseFirestore.instance
+                                              .collection('scenarios')
+                                              .doc(scenario['docId'])
+                                              .collection('testCases')
+                                              .doc(testCase['docId'])
+                                              .update({
+                                            'description': description,
+                                            'comments': comments,
+                                            'tags': tags,
+                                            'updatedAt':
+                                                FieldValue.serverTimestamp(),
+                                          });
+
+                                          // Add the change to the changes collection
+                                          await FirebaseFirestore.instance
+                                              .collection('scenarios')
+                                              .doc(scenario['docId'])
+                                              .collection('changes')
+                                              .add({
+                                            'timestamp':
+                                                FieldValue.serverTimestamp(),
+                                            'editedBy': FirebaseAuth.instance
+                                                    .currentUser?.email ??
+                                                'unknown_user',
+                                            'testCaseId': testCase['bugId'],
+                                            'tags': tags,
+                                          });
+
+                                          Fluttertoast.showToast(
+                                            msg:
+                                                "Test case saved successfully!",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            backgroundColor: Colors.green,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0,
+                                          );
+                                          store.dispatch(FetchTestCasesAction(
+                                              scenario['docId']));
+                                        } catch (e) {
+                                          Fluttertoast.showToast(
+                                            msg: "Failed to save changes: $e",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0,
+                                          );
+                                        }
+                                      },
                                     ),
-                                ],
-                              ),
-                              Text(
-                                "Tags: ${testCase['tags']?.join(', ') ?? 'N/A'}",
-                                style: TextStyle(
-                                  color: _getTagColor(testCase['tags']),
+                                    if (designation != 'Junior Tester')
+                                      IconButton(
+                                        color: Colors.red,
+                                        icon: const Icon(Icons.delete),
+                                        onPressed: () => _deleteTestCase(
+                                            testCase['docId'], testCase),
+                                      ),
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                  "Test Case ID: ${testCase['bugId'] ?? 'N/A'}"),
-                              Text(
-                                  "Short Description: ${testCase['description'] ?? 'N/A'}"),
-                              Text(
-                                  "Comments: ${testCase['comments'] ?? 'N/A'}"),
-                              Text("Created At: $formattedDate",
-                                  style: TextStyle(fontSize: 10)),
-                              Text(
+
+                                /// Editable fields
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: descriptionController,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: "Description",
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: commentsController,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: "Comments",
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: DropdownButtonFormField<String>(
+                                    value: selectedTag,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: "Tags",
+                                    ),
+                                    items: tagsOptions
+                                        .map((tag) => DropdownMenuItem(
+                                            value: tag, child: Text(tag)))
+                                        .toList(),
+                                    onChanged: (value) => selectedTag = value,
+                                  ),
+                                ),
+
+                                /// Non-editable fields
+                                Text(
+                                    "Test Case ID: ${testCase['bugId'] ?? 'N/A'}"),
+                                Text("Created At: $formattedDate",
+                                    style: const TextStyle(fontSize: 10)),
+                                Text(
                                   "Created By: ${testCase['createdBy'] ?? 'N/A'}",
-                                  style: TextStyle(fontSize: 10)),
-                            ],
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -272,6 +421,23 @@ class ScenarioDetailPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                // Row(
+                //   children: [
+                //     // const TextField(
+                //     //   decoration: InputDecoration(
+                //     //       border: OutlineInputBorder(),
+                //     //       labelText: "Add Comment......"),
+                //     // ),
+                //     // IconButton(
+                //     //     onPressed: () {}, icon: const Icon(Icons.attachment)),
+                //     IconButton(
+                //       onPressed: () {
+                //         _addComment(context, scenario['docId']);
+                //       },
+                //       icon: const Icon(Icons.send),
+                //     ),
+                //   ],
+                // ),
                 const Divider(),
                 FutureBuilder<List<Map<String, dynamic>>>(
                   future: _fetchComments(scenario['docId']),
@@ -294,73 +460,64 @@ class ScenarioDetailPage extends StatelessWidget {
                           final formattedDate =
                               DateFormat("dd-MM-yyyy. hh:mm a")
                                   .format(timestamp.toDate());
-                          return Card(
-                            child: ListTile(
-                              leading: GestureDetector(
-                                onTap: () {
-                                  if (imageUrl != null && imageUrl.isNotEmpty) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Image.network(
-                                                imageUrl,
-                                                fit: BoxFit.contain,
-                                                errorBuilder: (context, error,
-                                                    stackTrace) {
-                                                  return const Text(
-                                                    "Failed to load image",
-                                                    style: TextStyle(
-                                                        color: Colors.red),
-                                                  );
-                                                },
-                                              ),
-                                              const SizedBox(height: 10),
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.of(context).pop(),
-                                                child: const Text("Close"),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
-                                child: CircleAvatar(
-                                  backgroundImage:
-                                      imageUrl != null && imageUrl.isNotEmpty
-                                          ? NetworkImage(imageUrl)
-                                          : null,
-                                  backgroundColor: Colors.grey.shade300,
-                                  child: imageUrl == null || imageUrl.isEmpty
-                                      ? const Icon(Icons.person,
-                                          color: Colors.white)
-                                      : null,
-                                ),
-                              ),
-                              title: Text(
-                                comment['text'] ?? 'N/A',
-                                style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    comment['createdBy'] ?? 'N/A',
-                                    style: const TextStyle(fontSize: 13),
-                                  ),
-                                  Text(
-                                    formattedDate,
-                                    style: const TextStyle(fontSize: 10),
-                                  ),
+                          final createdBy =
+                              comment['createdBy'] ?? 'unknown_user';
+                          final currentUserEmail =
+                              FirebaseAuth.instance.currentUser?.email;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment: createdBy == currentUserEmail
+                                  ? MainAxisAlignment.end
+                                  : MainAxisAlignment.start,
+                              children: [
+                                if (createdBy != currentUserEmail) ...[
+                                  _buildAvatar(imageUrl),
+                                  const SizedBox(width: 8),
                                 ],
-                              ),
+                                Flexible(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: createdBy == currentUserEmail
+                                          ? Colors.blue.shade100
+                                          : Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          comment['text'] ?? 'N/A',
+                                          style: const TextStyle(fontSize: 15),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          "By: $createdBy",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        Text(
+                                          formattedDate,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                if (createdBy == currentUserEmail) ...[
+                                  const SizedBox(width: 8),
+                                  _buildAvatar(imageUrl),
+                                ],
+                              ],
                             ),
                           );
                         },
@@ -604,20 +761,24 @@ class ScenarioDetailPage extends StatelessWidget {
           .limit(10)
           .get();
 
-      return snapshot.docs.map((doc) {
+      final changes = snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
-        final testCaseId = data['testCaseId'] ?? 'N/A'; // Fetch testCaseId
+        final testCaseId = data['testCaseId']?.toString(); // Ensure string
         final tags = data['tags'] != null
             ? List<String>.from(data['tags'])
-            : ['N/A']; // Ensure tags is always a list
+            : null; // Ensure tags is a list or null
 
         return {
           'docId': doc.id,
           ...data,
-          'testCaseId': testCaseId, // Add testCaseId
-          'tags': tags, // Add tags
+          'testCaseId': testCaseId?.isEmpty == true ? null : testCaseId,
+          'tags': tags?.isEmpty == true ? null : tags,
         };
       }).toList();
+      final filteredChanges = changes.where((change) {
+        return change['testCaseId'] != null || change['tags'] != null;
+      }).toList();
+      return filteredChanges;
     } catch (e) {
       print("Error fetching change history: $e");
       return [];
@@ -657,146 +818,16 @@ class ScenarioDetailPage extends StatelessWidget {
       print("Error saving change history: $e");
     }
   }
+}
 
-  void _editTestCase(BuildContext context, Map<String, dynamic> testCase) {
-    final TextEditingController nameController =
-        TextEditingController(text: testCase['name'] ?? '');
-    final TextEditingController bugIdController =
-        TextEditingController(text: testCase['bugId'] ?? '');
-    final TextEditingController shortDescriptionController =
-        TextEditingController(text: testCase['shortDescription'] ?? '');
-    final TextEditingController descriptionController =
-        TextEditingController(text: testCase['description'] ?? '');
-    final TextEditingController commentsController =
-        TextEditingController(text: testCase['comments'] ?? '');
-
-    String? selectedTag = testCase['tags']?.isNotEmpty ?? false
-        ? testCase['tags'][0] // If multiple tags exist, take the first one
-        : null;
-
-    final tagsOptions = designation == 'Junior Tester'
-        ? ["Passed", "Failed", "In Review"]
-        : ["Passed", "Failed", "In Review", "Completed"];
-
-    // Make sure the selectedTag is valid before passing it to DropdownButtonFormField
-    if (selectedTag != null && !tagsOptions.contains(selectedTag)) {
-      selectedTag = tagsOptions.isNotEmpty ? tagsOptions[0] : null;
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Edit Test Case"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration:
-                      const InputDecoration(labelText: "Test Case Name"),
-                ),
-                TextField(
-                  controller: bugIdController,
-                  decoration: const InputDecoration(labelText: "Bug ID"),
-                  readOnly: true, // Bug ID is uneditable
-                ),
-                TextField(
-                  controller: shortDescriptionController,
-                  decoration:
-                      const InputDecoration(labelText: "Short Description"),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: "Description"),
-                ),
-                TextField(
-                  controller: commentsController,
-                  decoration: const InputDecoration(labelText: "Comments"),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedTag,
-                  decoration: const InputDecoration(labelText: "Tags"),
-                  items: tagsOptions
-                      .map((tag) =>
-                          DropdownMenuItem(value: tag, child: Text(tag)))
-                      .toList(),
-                  onChanged: (value) => selectedTag = value,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () async {
-                final newName = nameController.text;
-                final newBugId = bugIdController.text; // Bug ID is not changed
-                final newShortDescription = shortDescriptionController.text;
-                final newDescription = descriptionController.text;
-                final newComments = commentsController.text;
-                final newTags = selectedTag != null ? [selectedTag] : [];
-
-                if (newName.isNotEmpty) {
-                  try {
-                    // Update the test case document
-                    await FirebaseFirestore.instance
-                        .collection('scenarios')
-                        .doc(scenario['docId'])
-                        .collection('testCases')
-                        .doc(testCase['docId'])
-                        .update({
-                      'name': newName,
-                      'bugId': newBugId, // Keep Bug ID as is
-                      'shortDescription': newShortDescription,
-                      'description': newDescription,
-                      'comments': newComments,
-                      'tags': newTags,
-                      'updatedAt': FieldValue.serverTimestamp(),
-                    });
-
-                    // Add the change to the changes collection
-                    await FirebaseFirestore.instance
-                        .collection('scenarios')
-                        .doc(scenario['docId'])
-                        .collection('changes')
-                        .add({
-                      'timestamp': FieldValue.serverTimestamp(),
-                      'editedBy': FirebaseAuth.instance.currentUser?.email ??
-                          'unknown_user',
-                      'testCaseId': newBugId, // Store the Bug ID (unchanged)
-                      'tags': newTags, // Store the selected tag
-                    });
-
-                    print("Test case updated and change history saved.");
-
-                    // Optionally: Notify or refresh
-                    await _saveChangeHistory(scenario['docId'],
-                        "Updated test case ${testCase['docId']}");
-                    store.dispatch(FetchTestCasesAction(scenario['docId']));
-                    Navigator.of(context).pop();
-                  } catch (e) {
-                    Fluttertoast.showToast(
-                      msg: "Failed to add update!",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      backgroundColor: Colors.black,
-                      textColor: Colors.white,
-                      fontSize: 16.0,
-                    );
-                  }
-                }
-              },
-              child: const Text("Save"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+Widget _buildAvatar(String? imageUrl) {
+  return CircleAvatar(
+    radius: 25,
+    backgroundImage:
+        imageUrl != null && imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+    backgroundColor: Colors.grey.shade300,
+    child: imageUrl == null || imageUrl.isEmpty
+        ? const Icon(Icons.person, color: Colors.white)
+        : null,
+  );
 }

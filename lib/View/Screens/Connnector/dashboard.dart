@@ -139,7 +139,8 @@ class DashboardPage extends StatelessWidget {
                                 },
                               );
                             },
-                            subtitle: Text(scenario['shortDescription'] ?? ''),
+                            subtitle: Text(
+                                "Scenario Name: ${scenario['name'] ?? 'N/A'}"),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
