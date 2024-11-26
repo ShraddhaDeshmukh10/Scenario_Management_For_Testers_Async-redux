@@ -1,18 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:scenario_management_tool_for_testers/Actions/mainactions.dart';
-import 'package:scenario_management_tool_for_testers/Services/dataservice.dart';
+import 'package:scenario_management_tool_for_testers/View/Screens/testcasecommentpage.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 
@@ -56,7 +49,6 @@ class ScenarioDetailPage extends StatelessWidget {
     }
 
     final h = MediaQuery.of(context).size.height;
-    final w = MediaQuery.of(context).size.width;
     return StoreConnector<AppState, List<Map<String, dynamic>>>(
       converter: (store) => store.state.testCases,
       onInit: (store) =>
@@ -117,36 +109,86 @@ class ScenarioDetailPage extends StatelessWidget {
                                                         .toDate())
                                                 : null;
 
+                                            // return Column(
+                                            //   crossAxisAlignment:
+                                            //       CrossAxisAlignment.start,
+                                            //   children: [
+                                            //     if (testCaseId != null)
+                                            //       Text(
+                                            //           "Test Case ID: $testCaseId"), // Conditionally show testCaseId
+                                            //     if (tags != null)
+                                            //       Text(
+                                            //         "Tags: ${tags.join(', ')}",
+                                            //         style: TextStyle(
+                                            //           color: _getTagColor(tags),
+                                            //         ),
+                                            //       ), // Conditionally show tags
+                                            //     if (testCaseId != null ||
+                                            //         tags != null) ...[
+                                            //       if (editedBy.isNotEmpty)
+                                            //         Text(
+                                            //           "Edited By: $editedBy",
+                                            //           style: TextStyle(
+                                            //               fontSize: 10),
+                                            //         ), // Conditionally show editedBy
+                                            //       if (timestamp != null)
+                                            //         Text(
+                                            //           "Timestamp: $timestamp",
+                                            //           style: TextStyle(
+                                            //               fontSize: 10),
+                                            //         ), // Conditionally show timestamp
+                                            //     ],
+                                            //     Divider(),
+                                            //   ],
+                                            // );
                                             return Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 if (testCaseId != null)
-                                                  Text(
-                                                      "Test Case ID: $testCaseId"), // Conditionally show testCaseId
+                                                  _buildInfoRow(
+                                                    icon: Icons.assignment,
+                                                    label: "Test Case ID",
+                                                    value: testCaseId,
+                                                    valueStyle: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                 if (tags != null)
-                                                  Text(
-                                                    "Tags: ${tags.join(', ')}",
-                                                    style: TextStyle(
-                                                      color: _getTagColor(tags),
-                                                    ),
-                                                  ), // Conditionally show tags
+                                                  _buildInfoRow(
+                                                    icon: Icons.label,
+                                                    label: "Tags",
+                                                    value: tags.join(', '),
+                                                    valueStyle: TextStyle(
+                                                        color:
+                                                            _getTagColor(tags)),
+                                                  ),
                                                 if (testCaseId != null ||
                                                     tags != null) ...[
                                                   if (editedBy.isNotEmpty)
-                                                    Text(
-                                                      "Edited By: $editedBy",
-                                                      style: TextStyle(
-                                                          fontSize: 10),
-                                                    ), // Conditionally show editedBy
+                                                    _buildInfoRow(
+                                                      icon: Icons.edit,
+                                                      label: "Edited By",
+                                                      value: editedBy,
+                                                      valueStyle: TextStyle(
+                                                          fontSize: 12,
+                                                          fontStyle:
+                                                              FontStyle.italic),
+                                                    ),
                                                   if (timestamp != null)
-                                                    Text(
-                                                      "Timestamp: $timestamp",
-                                                      style: TextStyle(
-                                                          fontSize: 10),
-                                                    ), // Conditionally show timestamp
+                                                    _buildInfoRow(
+                                                      icon: Icons.access_time,
+                                                      label: "Timestamp",
+                                                      value: timestamp,
+                                                      valueStyle: TextStyle(
+                                                          fontSize: 12,
+                                                          fontStyle:
+                                                              FontStyle.italic),
+                                                    ),
                                                 ],
-                                                Divider(),
+                                                Divider(
+                                                    thickness: 1,
+                                                    color: Colors.black),
                                               ],
                                             );
                                           }).toList(),
@@ -170,26 +212,63 @@ class ScenarioDetailPage extends StatelessWidget {
                 const Divider(),
 
                 Card(
-                  child: Column(
-                    children: [
-                      Text("Scenario Name: ${scenario['name'] ?? 'N/A'}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          )),
-                      Text(
-                        "Assigned User: ${scenario['assignedToEmail'] ?? 'N/A'}",
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                      Text(
-                        "Description: ${scenario['shortDescription'] ?? 'N/A'}",
-                      ),
-                      Text(
-                        "Created At: ${scenario['createdAt'] != null ? DateFormat("dd-MM-yyyy. hh:mm a").format((scenario['createdAt'] as Timestamp).toDate()) : 'N/A'}",
-                        style: TextStyle(fontSize: 10),
-                      ),
-                      Text("Created By: ${scenario['createdByEmail'] ?? 'N/A'}",
-                          style: TextStyle(fontSize: 10)),
-                    ],
+                  elevation: 4,
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Text(
+                        //   "Scenario Details",
+                        //   style: TextStyle(
+                        //     fontSize: 16,
+                        //     fontWeight: FontWeight.bold,
+                        //     color: Colors.blueAccent,
+                        //   ),
+                        // ),
+                        // Divider(thickness: 1.5),
+                        // SizedBox(height: 8),
+                        _buildInfoRow(
+                          icon: Icons.text_snippet,
+                          label: "Scenario Name",
+                          value: scenario['name'] ?? 'N/A',
+                          valueStyle: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8),
+                        _buildInfoRow(
+                          icon: Icons.person,
+                          label: "Assigned User",
+                          value: scenario['assignedToEmail'] ?? 'N/A',
+                          valueStyle: TextStyle(color: Colors.blue),
+                        ),
+                        SizedBox(height: 8),
+                        _buildInfoRow(
+                          icon: Icons.description,
+                          label: "Description",
+                          value: scenario['shortDescription'] ?? 'N/A',
+                        ),
+                        SizedBox(height: 8),
+                        _buildInfoRow(
+                          icon: Icons.calendar_today,
+                          label: "Created At",
+                          value: scenario['createdAt'] != null
+                              ? DateFormat("dd-MM-yyyy, hh:mm a").format(
+                                  (scenario['createdAt'] as Timestamp).toDate())
+                              : 'N/A',
+                          valueStyle: TextStyle(fontSize: 12),
+                        ),
+                        SizedBox(height: 8),
+                        _buildInfoRow(
+                          icon: Icons.email,
+                          label: "Created By",
+                          value: scenario['createdByEmail'] ?? 'N/A',
+                          valueStyle: TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -207,7 +286,7 @@ class ScenarioDetailPage extends StatelessWidget {
                   const Text("No test cases found")
                 else
                   Container(
-                    height: 0.33 * h,
+                    height: 0.58 * h,
                     child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
@@ -256,13 +335,30 @@ class ScenarioDetailPage extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        "Test Case Name: ${testCase['name'] ?? 'N/A'}",
+                                        testCase['name'] ?? 'N/A',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                TestCaseCommentsPage(
+                                              scenarioId: scenario['docId'],
+                                              testCaseId: testCase['docId'],
+                                              roleColor: roleColor,
+                                              designation: designation,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.add_comment),
                                     ),
                                     IconButton(
                                       color: Colors.blue,
@@ -358,6 +454,7 @@ class ScenarioDetailPage extends StatelessWidget {
                                     controller: descriptionController,
                                     decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
+                                      prefixIcon: Icon(Icons.description),
                                       labelText: "Description",
                                     ),
                                   ),
@@ -368,6 +465,7 @@ class ScenarioDetailPage extends StatelessWidget {
                                     controller: commentsController,
                                     decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
+                                      prefixIcon: Icon(Icons.comment),
                                       labelText: "Comments",
                                     ),
                                   ),
@@ -389,13 +487,42 @@ class ScenarioDetailPage extends StatelessWidget {
                                 ),
 
                                 /// Non-editable fields
-                                Text(
-                                    "Test Case ID: ${testCase['bugId'] ?? 'N/A'}"),
-                                Text("Created At: $formattedDate",
-                                    style: const TextStyle(fontSize: 10)),
-                                Text(
-                                  "Created By: ${testCase['createdBy'] ?? 'N/A'}",
-                                  style: const TextStyle(fontSize: 10),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: "Test Case ID",
+                                      prefixIcon: Icon(Icons.description),
+                                      hintText: testCase['bugId'] ?? 'N/A',
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: "Created At",
+                                      prefixIcon:
+                                          Icon(Icons.calendar_today_sharp),
+                                      hintText: formattedDate,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: "Created By",
+                                      prefixIcon: Icon(Icons.email),
+                                      hintText: testCase['createdBy'] ?? 'N/A',
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -404,127 +531,6 @@ class ScenarioDetailPage extends StatelessWidget {
                       },
                     ),
                   ),
-
-                const Divider(),
-                Row(
-                  children: [
-                    const Text(
-                      "Comment List",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _addComment(context, scenario['docId']);
-                      },
-                      child: const Text("Add Comment"),
-                    ),
-                  ],
-                ),
-                // Row(
-                //   children: [
-                //     // const TextField(
-                //     //   decoration: InputDecoration(
-                //     //       border: OutlineInputBorder(),
-                //     //       labelText: "Add Comment......"),
-                //     // ),
-                //     // IconButton(
-                //     //     onPressed: () {}, icon: const Icon(Icons.attachment)),
-                //     IconButton(
-                //       onPressed: () {
-                //         _addComment(context, scenario['docId']);
-                //       },
-                //       icon: const Icon(Icons.send),
-                //     ),
-                //   ],
-                // ),
-                const Divider(),
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: _fetchComments(scenario['docId']),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text("No comments found"));
-                    }
-                    final comments = snapshot.data!;
-                    return Container(
-                      height: h * 0.3,
-                      child: ListView.builder(
-                        itemCount: comments.length,
-                        itemBuilder: (context, index) {
-                          final comment = comments[index];
-                          final imageUrl = comment['attachment'] as String?;
-                          final timestamp = comment['timestamp'] as Timestamp;
-                          final formattedDate =
-                              DateFormat("dd-MM-yyyy. hh:mm a")
-                                  .format(timestamp.toDate());
-                          final createdBy =
-                              comment['createdBy'] ?? 'unknown_user';
-                          final currentUserEmail =
-                              FirebaseAuth.instance.currentUser?.email;
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: createdBy == currentUserEmail
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
-                              children: [
-                                if (createdBy != currentUserEmail) ...[
-                                  _buildAvatar(imageUrl),
-                                  const SizedBox(width: 8),
-                                ],
-                                Flexible(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: createdBy == currentUserEmail
-                                          ? Colors.blue.shade100
-                                          : Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          comment['text'] ?? 'N/A',
-                                          style: const TextStyle(fontSize: 15),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "By: $createdBy",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        Text(
-                                          formattedDate,
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                if (createdBy == currentUserEmail) ...[
-                                  const SizedBox(width: 8),
-                                  _buildAvatar(imageUrl),
-                                ],
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
           ),
@@ -534,222 +540,6 @@ class ScenarioDetailPage extends StatelessWidget {
   }
 
 //// used to fetch testcases from firestore
-
-  Future<List<Map<String, dynamic>>> _fetchComments(String scenarioId) async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('scenarios')
-          .doc(scenarioId)
-          .collection('comments')
-          .orderBy('timestamp', descending: true)
-          .get();
-
-      return snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...?doc.data() as Map<String, dynamic>};
-      }).toList();
-    } catch (e) {
-      print("Error fetching comments: $e");
-      return [];
-    }
-  }
-
-  void _addComment(BuildContext context, String scenarioId) {
-    final TextEditingController commentController = TextEditingController();
-    String? imageUrl;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text("Add Comment"),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: commentController,
-                      decoration: const InputDecoration(
-                        labelText: "Enter your comment",
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton.icon(
-                      onPressed: () => _pickImage(context, (url) {
-                        setState(() {
-                          imageUrl = url;
-                        });
-                      }),
-                      icon: const Icon(Icons.upload),
-                      label: const Text("Upload Image"),
-                    ),
-                    if (imageUrl != null) ...[
-                      const SizedBox(height: 10),
-                      Text("Uploaded Image URL: $imageUrl"),
-                      const SizedBox(height: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Image.network(
-                          imageUrl!,
-                          height: 150,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Text(
-                              'Failed to load image',
-                              style: TextStyle(color: Colors.red),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Cancel"),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final commentText = commentController.text.trim();
-                    if (commentText.isNotEmpty) {
-                      try {
-                        final commentData = {
-                          'text': commentText,
-                          'createdBy':
-                              FirebaseAuth.instance.currentUser?.email ??
-                                  'unknown_user',
-                          'timestamp': FieldValue.serverTimestamp(),
-                          'attachment': imageUrl ?? '',
-                        };
-
-                        await FirebaseFirestore.instance
-                            .collection('scenarios')
-                            .doc(scenarioId)
-                            .collection('comments')
-                            .add(commentData);
-
-                        Fluttertoast.showToast(
-                          msg: "Comment added successfully!",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.black,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-
-                        store.dispatch(FetchTestCasesAction(scenarioId));
-
-                        Navigator.of(context).pop();
-                      } catch (e) {
-                        print("Error saving comment: $e");
-                        Fluttertoast.showToast(
-                          msg: "Error Adding Comment",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.black,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                      }
-                    } else {
-                      Fluttertoast.showToast(
-                        msg: "Comment cannot be Empty!",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
-                    }
-                  },
-                  child: const Text("Add"),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _pickImage(
-      BuildContext context, Function(String) onImageUploaded) async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      withData: true,
-    );
-
-    if (result != null) {
-      File file = File(result.files.single.path!);
-
-      // Check file size
-      if (result.files.single.size <= 200 * 1024) {
-        String? imageUrl = await _uploadImage(file);
-        if (imageUrl != null) {
-          onImageUploaded(imageUrl);
-        } else {
-          Fluttertoast.showToast(
-            msg: "Image Upload Failed",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-        }
-      } else {
-        Fluttertoast.showToast(
-          msg: "Please select an image below 200KB",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      }
-    }
-  }
-
-  Future<String?> _uploadImage(File file) async {
-    try {
-      Uint8List fileBytes = await file.readAsBytes();
-      String fileName = file.uri.pathSegments.last;
-
-      print("Uploading file: $fileName");
-      print("File size: ${fileBytes.length} bytes");
-
-      final dataService = GetIt.instance<DataService>();
-      // Directly get the response from uploadFile
-      final http.Response response =
-          await dataService.uploadFile(fileBytes, fileName);
-
-      // Check the response status code
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print("Image uploaded successfully: ${response.body}");
-        // Assuming the response body contains the relative URL
-        final responseData = jsonDecode(response.body);
-        String relativeImageUrl = responseData['data'];
-
-        // Concatenate base URL with the relative path to get the full image URL
-        String fullImageUrl = "https://dev.orderbookings.com$relativeImageUrl";
-
-        return fullImageUrl; // Return the full image URL
-      } else {
-        print("Error uploading image: ${response.statusCode}");
-        return null;
-      }
-    } catch (e) {
-      print("Error during image upload: $e");
-      return null;
-    }
-  }
-
   Future<List<Map<String, dynamic>>> _fetchChangeHistory(
       String scenarioId) async {
     try {
@@ -818,6 +608,39 @@ class ScenarioDetailPage extends StatelessWidget {
       print("Error saving change history: $e");
     }
   }
+}
+
+Widget _buildInfoRow({
+  required IconData icon,
+  required String label,
+  required String value,
+  TextStyle? valueStyle,
+}) {
+  return Row(
+    children: [
+      Icon(icon, size: 20, color: Colors.grey),
+      SizedBox(width: 8),
+      Text(
+        "$label: ",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.black87,
+        ),
+      ),
+      Expanded(
+        child: Text(
+          value,
+          style: valueStyle ??
+              TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ],
+  );
 }
 
 Widget _buildAvatar(String? imageUrl) {

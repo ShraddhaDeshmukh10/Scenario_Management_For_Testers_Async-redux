@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:scenario_management_tool_for_testers/Actions/addcomment.dart';
-import 'package:scenario_management_tool_for_testers/Actions/fetchaction.dart';
 import 'package:scenario_management_tool_for_testers/Actions/fetchsenario.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/Services/sign_out.dart';
@@ -21,9 +19,7 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, ViewModel>(
       onInit: (store) {
-        store.dispatch(FetchAssignmentsAction());
         store.dispatch(FetchScenariosAction());
-        store.dispatch(FetchCommentsAction());
       },
       vm: () => Factory(this),
       builder: (context, vm) {
