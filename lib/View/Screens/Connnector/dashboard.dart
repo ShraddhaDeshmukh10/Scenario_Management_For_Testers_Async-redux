@@ -2,6 +2,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/Actions/fetchsenario.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
@@ -71,6 +72,7 @@ class DashboardPage extends StatelessWidget {
                       return DropdownButtonFormField<String>(
                         value: selectedFilter,
                         decoration: const InputDecoration(
+                          hintText: "Select Project Name",
                           labelText: "Filter by Project Type",
                           border: OutlineInputBorder(),
                         ),
@@ -146,12 +148,13 @@ class DashboardPage extends StatelessWidget {
                                           context, scenario['docId'], vm);
                                     },
                                     child: Text("Add Test Case")),
-                                IconButton(
-                                    onPressed: () {
-                                      _deleteScenarioDialog(
-                                          context, scenario['docId']);
-                                    },
-                                    icon: Icon(Icons.delete))
+                                if (vm.designation != 'Junior Tester')
+                                  IconButton(
+                                      onPressed: () {
+                                        _deleteScenarioDialog(
+                                            context, scenario['docId']);
+                                      },
+                                      icon: Icon(Icons.delete))
                               ],
                             ),
                           ),
@@ -165,6 +168,7 @@ class DashboardPage extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             onPressed: () => _addScenarioDialog(context, vm),
             child: const Icon(Icons.add),
+            backgroundColor: vm.roleColor,
             tooltip: 'Add Scenario',
           ),
         );
@@ -229,7 +233,9 @@ void _addTestCaseDialog(BuildContext context, String scenarioId, ViewModel vm) {
     children: [
       TextFormField(
           controller: bugIdController,
-          decoration: const InputDecoration(labelText: "Test  Case ID")),
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: const InputDecoration(
+              labelText: "Test Case ID", hintText: "digits only")),
       TextFormField(
           controller: nameController,
           decoration: const InputDecoration(labelText: "Test Case Name")),
@@ -248,38 +254,68 @@ void _addTestCaseDialog(BuildContext context, String scenarioId, ViewModel vm) {
           controller: descriptionController,
           decoration: const InputDecoration(labelText: "Description")),
     ],
-    onSubmit: () {
+    onSubmit: () async {
       if (bugIdController.text.isNotEmpty &&
           nameController.text.isNotEmpty &&
           selectedTag != null) {
-        final testCase = {
-          'name': nameController.text,
-          'bugId': bugIdController.text,
-          'tags': selectedTag,
-          'comments': commentsController.text,
-          'description': descriptionController.text,
-          'scenarioId': scenarioId,
-          'createdAt': FieldValue.serverTimestamp(),
-          'createdBy': createdBy,
-        };
+        try {
+          // Check if the bugId already exists
+          final querySnapshot = await FirebaseFirestore.instance
+              .collection('scenarios')
+              .doc(scenarioId)
+              .collection('testCases')
+              .where('bugId', isEqualTo: bugIdController.text)
+              .get();
 
-        FirebaseFirestore.instance
-            .collection('scenarios')
-            .doc(scenarioId)
-            .collection('testCases')
-            .add(testCase)
-            .then((_) {
-          Navigator.of(context).pop();
-          vm.fetchScenarios();
-        }).catchError((e) {
+          if (querySnapshot.docs.isNotEmpty) {
+            Fluttertoast.showToast(
+              msg: "Test Case ID already exists!",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          } else {
+            final testCase = {
+              'name': nameController.text,
+              'bugId': bugIdController.text,
+              'tags': selectedTag,
+              'comments': commentsController.text,
+              'description': descriptionController.text,
+              'scenarioId': scenarioId,
+              'createdAt': FieldValue.serverTimestamp(),
+              'createdBy': createdBy,
+            };
+
+            await FirebaseFirestore.instance
+                .collection('scenarios')
+                .doc(scenarioId)
+                .collection('testCases')
+                .add(testCase);
+
+            Navigator.of(context).pop();
+            Fluttertoast.showToast(
+              msg: "Test Case Added Succesfully",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+
+            vm.fetchScenarios();
+          }
+        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Failed to add test case: $e")));
-        });
+            SnackBar(content: Text("Failed to add test case: $e")),
+          );
+        }
       } else {
         Fluttertoast.showToast(
           msg: "Please Fill all details!",
           toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
+          gravity: ToastGravity.CENTER,
           backgroundColor: Colors.black,
           textColor: Colors.white,
           fontSize: 16.0,
@@ -311,9 +347,9 @@ void _deleteScenarioDialog(BuildContext context, String docId) {
                     .delete();
                 Navigator.of(context).pop();
                 Fluttertoast.showToast(
-                  msg: "Scenario added successfully!",
+                  msg: "Scenario Deleted successfully!",
                   toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
+                  gravity: ToastGravity.CENTER,
                   backgroundColor: Colors.black,
                   textColor: Colors.white,
                   fontSize: 16.0,
@@ -384,9 +420,13 @@ void _addScenarioDialog(BuildContext context, ViewModel vm) {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp("[A-Z|a-z]"))
+                      ],
                       controller: nameController,
-                      decoration:
-                          const InputDecoration(labelText: "Scenario Name"),
+                      decoration: const InputDecoration(
+                          labelText: "Scenario Name",
+                          hintText: "Alphabets Only"),
                     ),
                     TextField(
                       controller: shortDescriptionController,
@@ -460,6 +500,15 @@ void _addScenarioDialog(BuildContext context, ViewModel vm) {
                     'createdByEmail': createdByEmail,
                     'assignedToEmail': assignedEmail,
                   });
+                  Fluttertoast.showToast(
+                    msg: "Scenario added successfully!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    backgroundColor: vm.roleColor,
+                    //backgroundColor: Colors.green,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
                   Navigator.of(context).pop();
                   vm.fetchScenarios();
                 } catch (e) {

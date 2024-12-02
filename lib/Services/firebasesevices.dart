@@ -2,24 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  // Fetch scenarios from Firebase
   Future<List<Map<String, dynamic>>> fetchScenariosFromFirebase() async {
     try {
-      // Fetch scenarios collection
       QuerySnapshot snapshot = await _firestore.collection('scenarios').get();
-
-      // Map each document to a Map with docId as well
       return snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...?doc.data() as Map<String, dynamic>};
+        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
       }).toList();
     } catch (e) {
       print("Error fetching scenarios: $e");
-      return []; // Return an empty list if an error occurs
+      return [];
     }
   }
 
-  // Update a specific scenario in Firestore
   Future<void> updateScenarioInFirebase(
       String docId, Map<String, dynamic> updatedData) async {
     try {
@@ -31,7 +25,6 @@ class FirebaseService {
     }
   }
 
-  // Add a new scenario to Firestore
   Future<void> addScenarioToFirebase(Map<String, dynamic> newScenario) async {
     try {
       // Add a new document to the 'scenarios' collection
@@ -42,7 +35,6 @@ class FirebaseService {
     }
   }
 
-  // Fetch test cases for a specific scenario
   Future<List<Map<String, dynamic>>> fetchTestCasesForScenario(
       String scenarioId) async {
     try {
@@ -54,7 +46,7 @@ class FirebaseService {
           .get();
 
       return snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...?doc.data() as Map<String, dynamic>};
+        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
       }).toList();
     } catch (e) {
       print("Error fetching test cases for scenario $scenarioId: $e");

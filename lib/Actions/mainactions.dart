@@ -1,7 +1,5 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:scenario_management_tool_for_testers/Services/response.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 
 ///Queries the 'testCases' subcollection under a particular scenario document
@@ -21,7 +19,7 @@ class FetchTestCasesAction extends ReduxAction<AppState> {
           .get();
 
       List<Map<String, dynamic>> testCases = snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...?doc.data() as Map<String, dynamic>};
+        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
       }).toList();
 
       return state.copy(testCases: testCases);
@@ -49,47 +47,12 @@ class FetchChangeHistoryAction extends ReduxAction<AppState> {
           .get();
 
       List<Map<String, dynamic>> changes = snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...?doc.data() as Map<String, dynamic>};
+        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
       }).toList();
 
       return state.copy(changeHistory: changes);
     } catch (e) {
       throw UserException("Error fetching change history: $e");
-    }
-  }
-}
-
-///The action verifies that the commentText is not empty,
-///then uses Firebase Authentication to retrieve the current user’s email
-///and adds a comment with a server timestamp.
-class AddCommentAction extends ReduxAction<AppState> {
-  final String scenarioId;
-  final String commentText;
-
-  AddCommentAction({required this.scenarioId, required this.commentText});
-
-  @override
-  Future<AppState?> reduce() async {
-    final userEmail =
-        FirebaseAuth.instance.currentUser?.email ?? 'unknown_user';
-
-    if (commentText.isNotEmpty) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('scenarios')
-            .doc(scenarioId)
-            .collection('comments')
-            .add({
-          'text': commentText,
-          'createdBy': userEmail,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
-        return state.copy(response: DataResponse()); // ////added response
-      } catch (e) {
-        throw UserException("Error adding comment: $e");
-      }
-    } else {
-      throw UserException("Comment text cannot be empty.");
     }
   }
 }
@@ -111,7 +74,7 @@ class DeleteTestCaseAction extends ReduxAction<AppState> {
           .collection('testCases')
           .doc(testCaseId)
           .delete();
-      return state; // Return state to trigger rebuild
+      return state;
     } catch (e) {
       throw UserException("Failed to delete test case: $e");
     }

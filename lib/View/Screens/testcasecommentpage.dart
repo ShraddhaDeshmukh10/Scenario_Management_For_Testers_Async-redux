@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:scenario_management_tool_for_testers/Actions/addcomment.dart';
 import 'package:scenario_management_tool_for_testers/Services/dataservice.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
-import 'package:scenario_management_tool_for_testers/main.dart';
 
 class TestCaseCommentsPage extends StatefulWidget {
   final String scenarioId;
@@ -62,7 +57,7 @@ class _TestCaseCommentsPageState extends State<TestCaseCommentsPage> {
           .get();
 
       final fetchedComments = snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...?doc.data() as Map<String, dynamic>};
+        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
       }).toList();
 
       setState(() {
@@ -146,8 +141,9 @@ class _TestCaseCommentsPageState extends State<TestCaseCommentsPage> {
                     controller: comment1Controller,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: "Add Comment",
+                      labelText: "Add Comment......",
                       suffixIcon: IconButton(
+                        tooltip: "Add Attachment",
                         onPressed: () {
                           _pickImage(context, (url) => imageUrl = url);
                         },
@@ -158,6 +154,7 @@ class _TestCaseCommentsPageState extends State<TestCaseCommentsPage> {
                 ),
               ),
               IconButton(
+                tooltip: "Send..",
                 onPressed: () async {
                   final commentText = comment1Controller.text.trim();
                   await _addComment(commentText);

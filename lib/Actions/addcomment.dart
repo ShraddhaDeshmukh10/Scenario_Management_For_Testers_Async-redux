@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 
+///The action verifies that the commentText is not empty,
+///then uses Firebase Authentication to retrieve the current user’s email
+///and adds a comment with a server timestamp.
 class AddCommentToTestCaseAction extends ReduxAction<AppState> {
   final String scenarioId;
   final String testCaseId;
@@ -69,13 +72,11 @@ class FetchTestCaseCommentsAction extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
     try {
-      // Ensure the user is authenticated
       FirebaseAuth auth = FirebaseAuth.instance;
       if (auth.currentUser == null) {
         throw Exception("User is not authenticated");
       }
 
-      // Fetch comments from Firestore
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(scenarioId)
@@ -91,9 +92,9 @@ class FetchTestCaseCommentsAction extends ReduxAction<AppState> {
 
       List<Map<String, dynamic>> comments = snapshot.docs.map((doc) {
         return {
-          'text': doc['text'] ?? '', // Ensure the correct field name 'text'
+          'text': doc['text'] ?? '',
           'createdBy': doc['createdBy'] ?? '',
-          'timestamp': doc['timestamp'], // Correct field 'timestamp'
+          'timestamp': doc['timestamp'],
           'attachment': doc['attachment'] ?? '',
         };
       }).toList();

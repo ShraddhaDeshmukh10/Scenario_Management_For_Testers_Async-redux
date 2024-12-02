@@ -1,10 +1,10 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/Services/locator.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/Connnector/dashboard.dart';
+import 'package:scenario_management_tool_for_testers/View/Screens/edit_page.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/login.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/registerscreen.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/Connnector/scenariodetail.dart';
@@ -20,8 +20,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await Hive.initFlutter();
-  await Hive.openBox('userBox');
   setupServiceLocator();
   runApp(const MyApp());
 }
@@ -54,7 +52,12 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(builder: (_) => const RegisterPage());
               case Routes.dashboard:
                 return MaterialPageRoute(builder: (_) => const DashboardPage());
-
+              case Routes.editpagedetail:
+                return MaterialPageRoute(
+                    builder: (_) => EditHistoryPage(
+                        scenarioId: args['scenarioId'],
+                        roleColor: args['roleColor'],
+                        designation: args['designation']));
               case Routes.scenariodetail:
                 return MaterialPageRoute(
                   builder: (_) => ScenarioDetailPage(

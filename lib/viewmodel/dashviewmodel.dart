@@ -118,5 +118,7 @@ class Factory extends VmFactory<AppState, DashboardPage, ViewModel> {
   Factory(DashboardPage connector) : super(connector);
 
   @override
+
+  ///to mapstate and actions in vm
   ViewModel fromStore() => ViewModel.fromStore(store);
 }
