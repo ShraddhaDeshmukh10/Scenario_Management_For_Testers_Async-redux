@@ -43,7 +43,7 @@ class FetchChangeHistoryAction extends ReduxAction<AppState> {
           .doc(scenarioId)
           .collection('changes')
           .orderBy('timestamp', descending: true)
-          .limit(10)
+          .limit(11)
           .get();
 
       List<Map<String, dynamic>> changes = snapshot.docs.map((doc) {

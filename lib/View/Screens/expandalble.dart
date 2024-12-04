@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:scenario_management_tool_for_testers/Actions/mainactions.dart';
+import 'package:scenario_management_tool_for_testers/Helper/tag_helper.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/testcasecommentpage.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 
@@ -46,7 +47,7 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
   Widget build(BuildContext context) {
     final testCase = widget.testCase;
     final designation = widget.designation;
-
+    final tagColor = getTagColor(testCase['tags']);
     final createdAt = testCase['createdAt'] as Timestamp?;
     final formattedDate = createdAt != null
         ? DateFormat("dd-MM-yyyy. hh:mm a").format(createdAt.toDate())
@@ -60,34 +61,53 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
         ? (testCase['tags'] is List ? testCase['tags'][0] : testCase['tags'])
         : null;
 
-    // Dropdown options for tags
-    final tagsOptions = designation == 'Junior Tester'
-        ? ["Passed", "Failed", "In Review"]
-        : ["Passed", "Failed", "In Review", "Completed"];
-
+    final tagsOptions = ["Passed", "Failed", "In Review", "Completed"];
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0), // Card border radius
+      ),
       child: Column(
         children: [
-          ListTile(
-            title: Text(
-              testCase['name'] ?? 'N/A',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            onTap: () {
-              setState(() {
-                isExpanded = !isExpanded;
-              });
-            },
-            trailing: IconButton(
-              tooltip: "Tap to see Details",
-              icon: Icon(
-                isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0), // Match Card radius
+              border: Border(
+                top: BorderSide(
+                  color: tagColor,
+                  width: 3.0,
+                  style: BorderStyle.solid,
+                ),
               ),
-              onPressed: () {
+              boxShadow: [
+                BoxShadow(
+                  color: tagColor.withOpacity(0.2),
+                  offset: const Offset(0.1, 0.0),
+                  blurRadius: 1.0,
+                  spreadRadius: 1.0,
+                ),
+              ],
+            ),
+            child: ListTile(
+              title: Text(
+                testCase['name'] ?? 'N/A',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
                 setState(() {
                   isExpanded = !isExpanded;
                 });
               },
+              trailing: IconButton(
+                tooltip: "Tap to see Details",
+                icon: Icon(
+                  isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isExpanded = !isExpanded;
+                  });
+                },
+              ),
             ),
           ),
           if (isExpanded)
@@ -148,8 +168,21 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               return;
                             }
 
+                            if (designation == 'Junior Tester' &&
+                                selectedTag == "Completed") {
+                              Fluttertoast.showToast(
+                                msg:
+                                    "Junior Tester cannot save 'Completed' tag!",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                              return;
+                            }
+
                             try {
-                              // Update the test case document
                               await FirebaseFirestore.instance
                                   .collection('scenarios')
                                   .doc(widget.scenarioId)
@@ -161,8 +194,6 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                                 'tags': tags,
                                 'updatedAt': FieldValue.serverTimestamp(),
                               });
-
-                              // Add the change to the changes collection
                               await FirebaseFirestore.instance
                                   .collection('scenarios')
                                   .doc(widget.scenarioId)
@@ -208,8 +239,6 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                           ),
                       ],
                     ),
-
-                    /// Editable fields
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(

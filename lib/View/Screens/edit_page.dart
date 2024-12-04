@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:scenario_management_tool_for_testers/Helper/tag_helper.dart';
 
 class EditHistoryPage extends StatelessWidget {
   final String scenarioId;
@@ -21,7 +22,7 @@ class EditHistoryPage extends StatelessWidget {
           .doc(scenarioId)
           .collection('changes')
           .orderBy('timestamp', descending: true)
-          .limit(10)
+          .limit(11)
           .get();
 
       final changes = snapshot.docs.map((doc) {
@@ -49,29 +50,6 @@ class EditHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color _getTagColor(List<dynamic>? tags) {
-      // Ensure there is at least one tag
-      if (tags != null && tags.isNotEmpty) {
-        // Cast the first tag to String if it's dynamic
-        final tag =
-            tags[0] as String; // Ensure that the tag is treated as a String
-
-        switch (tag) {
-          case "Passed":
-            return Colors.green; // Green for "Passed"
-          case "Failed":
-            return Colors.red; // Red for "Failed"
-          case "In Review":
-            return Color.fromARGB(255, 189, 173, 22); // Yellow for "In Review"
-          case "Completed":
-            return Colors.orange; // Orange for "Completed"
-          default:
-            return Colors.black; // Default color for unknown tags
-        }
-      }
-      return Colors.black; // Default color when no tags are present
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: roleColor,
@@ -107,9 +85,31 @@ class EditHistoryPage extends StatelessWidget {
                       .format((change['timestamp'] as Timestamp).toDate())
                   : null;
 
+              // Determine card color based on tags
+              final cardColor = tags != null ? getTagColor(tags) : Colors.white;
               return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                ),
+                elevation: 5.0, // Adds shadow to the card
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Padding(
+                color: Colors.white, // Background color for the card
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: cardColor,
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: cardColor.withOpacity(0.1),
+                        blurRadius: 4.0,
+                        spreadRadius: 2.0,
+                        offset: const Offset(2.0, 2.0),
+                      ),
+                    ],
+                  ),
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +127,7 @@ class EditHistoryPage extends StatelessWidget {
                           icon: Icons.label,
                           label: "Tags",
                           value: tags.join(', '),
-                          valueStyle: TextStyle(color: _getTagColor(tags)),
+                          valueStyle: TextStyle(color: getTagColor(tags)),
                         ),
                       _buildInfoRow(
                         icon: Icons.edit,
@@ -163,11 +163,11 @@ class EditHistoryPage extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: Colors.grey),
-        SizedBox(width: 8),
+        Icon(icon, size: 20, color: Colors.black),
+        const SizedBox(width: 8),
         Text(
           "$label: ",
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -177,9 +177,9 @@ class EditHistoryPage extends StatelessWidget {
           child: Text(
             value,
             style: valueStyle ??
-                TextStyle(
+                const TextStyle(
                   fontSize: 14,
-                  color: Colors.black54,
+                  color: Colors.black,
                 ),
             overflow: TextOverflow.ellipsis,
           ),

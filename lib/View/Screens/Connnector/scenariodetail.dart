@@ -23,30 +23,8 @@ class ScenarioDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color _getTagColor(List<dynamic>? tags) {
-      // Ensure there is at least one tag
-      if (tags != null && tags.isNotEmpty) {
-        // Cast the first tag to String if it's dynamic
-        final tag =
-            tags[0] as String; // Ensure that the tag is treated as a String
-
-        switch (tag) {
-          case "Passed":
-            return Colors.green; // Green for "Passed"
-          case "Failed":
-            return Colors.red; // Red for "Failed"
-          case "In Review":
-            return Color.fromARGB(255, 189, 173, 22); // Yellow for "In Review"
-          case "Completed":
-            return Colors.orange; // Orange for "Completed"
-          default:
-            return Colors.black; // Default color for unknown tags
-        }
-      }
-      return Colors.black; // Default color when no tags are present
-    }
-
     final h = MediaQuery.of(context).size.height;
+    final w = MediaQuery.of(context).size.height;
     return StoreConnector<AppState, List<Map<String, dynamic>>>(
       converter: (store) => store.state.testCases,
       onInit: (store) =>
@@ -56,6 +34,22 @@ class ScenarioDetailPage extends StatelessWidget {
           appBar: AppBar(
             title: Text(scenario['projectName'] ?? 'Scenario Detail'),
             backgroundColor: roleColor,
+            actions: [
+              if (designation != 'Junior Tester') ...[
+                // Change history button code
+                ElevatedButton(
+                  child: const Text("Show Edit History"),
+                  onPressed: () {
+                    Navigator.pushNamed(context, Routes.editpagedetail,
+                        arguments: {
+                          'scenarioId': scenario['docId'],
+                          'roleColor': roleColor,
+                          'designation': designation
+                        });
+                  },
+                ),
+              ],
+            ],
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(8.0),
@@ -69,73 +63,77 @@ class ScenarioDetailPage extends StatelessWidget {
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
-
-                    /// this option is only available to developer and lead tester to track the changes in scenario tastcases.
-                    if (designation != 'Junior Tester') ...[
-                      // Change history button code
-                      TextButton(
-                        child: const Text("Show Edit History"),
-                        onPressed: () {
-                          Navigator.pushNamed(context, Routes.editpagedetail,
-                              arguments: {
-                                'scenarioId': scenario['docId'],
-                                'roleColor': roleColor,
-                                'designation': designation
-                              });
-                        },
-                      ),
-                    ],
                   ],
                 ),
                 const Divider(),
-
                 Card(
-                  elevation: 4,
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  elevation: 8,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoRow(
-                          icon: Icons.text_snippet,
-                          label: "Scenario Name",
-                          value: scenario['name'] ?? 'N/A',
-                          valueStyle: TextStyle(fontWeight: FontWeight.bold),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border(
+                        top: BorderSide(
+                          color: roleColor,
+                          width: 1.0,
+                          style: BorderStyle.solid,
                         ),
-                        SizedBox(height: 8),
-                        _buildInfoRow(
-                          icon: Icons.person,
-                          label: "Assigned User",
-                          value: scenario['assignedToEmail'] ?? 'N/A',
-                          valueStyle: TextStyle(color: Colors.blue),
+                        left: BorderSide(
+                          color: roleColor,
+                          width: 2.0,
+                          style: BorderStyle.solid,
                         ),
-                        SizedBox(height: 8),
-                        _buildInfoRow(
-                          icon: Icons.description,
-                          label: "Description",
-                          value: scenario['shortDescription'] ?? 'N/A',
-                        ),
-                        SizedBox(height: 8),
-                        _buildInfoRow(
-                          icon: Icons.calendar_today,
-                          label: "Created At",
-                          value: scenario['createdAt'] != null
-                              ? DateFormat("dd-MM-yyyy, hh:mm a").format(
-                                  (scenario['createdAt'] as Timestamp).toDate())
-                              : 'N/A',
-                          valueStyle: TextStyle(fontSize: 12),
-                        ),
-                        SizedBox(height: 8),
-                        _buildInfoRow(
-                          icon: Icons.email,
-                          label: "Created By",
-                          value: scenario['createdByEmail'] ?? 'N/A',
-                          valueStyle: TextStyle(fontSize: 12),
-                        ),
-                      ],
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildInfoRow(
+                            icon: Icons.text_snippet,
+                            label: "Scenario Name",
+                            value: scenario['name'] ?? 'N/A',
+                            valueStyle:
+                                const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildInfoRow(
+                            icon: Icons.person,
+                            label: "Assigned User",
+                            value: scenario['assignedToEmail'] ?? 'N/A',
+                            valueStyle: const TextStyle(color: Colors.blue),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildInfoRow(
+                            icon: Icons.description,
+                            label: "Description",
+                            value: scenario['shortDescription'] ?? 'N/A',
+                          ),
+                          const SizedBox(height: 8),
+                          _buildInfoRow(
+                            icon: Icons.calendar_today,
+                            label: "Created At",
+                            value: scenario['createdAt'] != null
+                                ? DateFormat("dd-MM-yyyy, hh:mm a").format(
+                                    (scenario['createdAt'] as Timestamp)
+                                        .toDate())
+                                : 'N/A',
+                            valueStyle: const TextStyle(fontSize: 12),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildInfoRow(
+                            icon: Icons.email,
+                            label: "Created By",
+                            value: scenario['createdByEmail'] ?? 'N/A',
+                            valueStyle: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

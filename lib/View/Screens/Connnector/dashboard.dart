@@ -32,12 +32,6 @@ class DashboardPage extends StatelessWidget {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             backgroundColor: vm.roleColor,
-            actions: [
-              IconButton(
-                onPressed: vm.clearFilters,
-                icon: Icon(Icons.clear_all),
-              ),
-            ],
           ),
           drawer: Drawer(
             child: ListView(
@@ -86,12 +80,10 @@ class DashboardPage extends StatelessWidget {
                           setState(() {
                             selectedFilter = value;
                             if (value == 'All') {
-                              selectedFilter =
-                                  null; // Clear the selected filter
-                              vm.clearFilters(); // Show all scenarios
+                              selectedFilter = null;
+                              vm.clearFilters();
                             } else {
-                              vm.filterScenarios(
-                                  value!); // Apply specific filter
+                              vm.filterScenarios(value!);
                             }
                           });
                         },
@@ -114,17 +106,49 @@ class DashboardPage extends StatelessWidget {
                 )
               else
                 // List of filtered scenarios
+
                 Expanded(
                   child: ListView.builder(
-                      itemCount: vm.filteredScenarios.length,
-                      itemBuilder: (context, index) {
-                        final scenario = vm.filteredScenarios[index];
-                        return Card(
+                    itemCount: vm.filteredScenarios.length,
+                    itemBuilder: (context, index) {
+                      final scenario = vm.filteredScenarios[index];
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(10.0), // Card border radius
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                10.0), // Match Card radius
+                            border: Border(
+                              top: BorderSide(
+                                color: vm.roleColor,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              left: BorderSide(
+                                color: vm.roleColor,
+                                width: 2.0,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: vm.roleColor.withOpacity(0.1),
+                                offset: const Offset(0.1, 0.0),
+                                blurRadius: 1.0,
+                                spreadRadius: 1.0,
+                              ),
+                            ],
+                          ),
                           child: ListTile(
                             title: Text(
-                              scenario['projectName'] ?? 'Unnamed Scenario',
+                              scenario['name'] ?? 'Unnamed Scenario',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                             onTap: () {
                               Navigator.pushNamed(
@@ -138,28 +162,33 @@ class DashboardPage extends StatelessWidget {
                               );
                             },
                             subtitle: Text(
-                                "Scenario Name: ${scenario['name'] ?? 'N/A'}"),
+                              scenario['shortDescription'] ?? 'N/A',
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 ElevatedButton(
-                                    onPressed: () {
-                                      _addTestCaseDialog(
-                                          context, scenario['docId'], vm);
-                                    },
-                                    child: Text("Add Test Case")),
+                                  onPressed: () {
+                                    _addTestCaseDialog(
+                                        context, scenario['docId'], vm);
+                                  },
+                                  child: Text("Add Test Case"),
+                                ),
                                 if (vm.designation != 'Junior Tester')
                                   IconButton(
-                                      onPressed: () {
-                                        _deleteScenarioDialog(
-                                            context, scenario['docId']);
-                                      },
-                                      icon: Icon(Icons.delete))
+                                    onPressed: () {
+                                      _deleteScenarioDialog(
+                                          context, scenario['docId']);
+                                    },
+                                    icon: Icon(Icons.delete),
+                                  ),
                               ],
                             ),
                           ),
-                        );
-                      }),
+                        ),
+                      );
+                    },
+                  ),
                 ),
             ],
           ),
