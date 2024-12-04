@@ -1,6 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 
 ///Queries the 'testCases' subcollection under a particular scenario document
 /// and maps each document containing test case details.

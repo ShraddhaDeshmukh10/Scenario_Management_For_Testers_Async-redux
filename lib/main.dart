@@ -2,16 +2,16 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
-import 'package:scenario_management_tool_for_testers/Services/locator.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/Connnector/dashboard.dart';
+import 'package:scenario_management_tool_for_testers/constants/locator.dart';
+import 'package:scenario_management_tool_for_testers/View/Screens/dashboard.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/edit_page.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/login.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/registerscreen.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/Connnector/scenariodetail.dart';
+import 'package:scenario_management_tool_for_testers/View/Screens/scenariodetail.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/splash.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'firebase_options.dart';
+import 'firebase/firebase_options.dart';
 
 final store = Store<AppState>(initialState: AppState.initialState());
 Future<void> main() async {

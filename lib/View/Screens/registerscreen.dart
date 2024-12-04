@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:async_redux/async_redux.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 import 'package:scenario_management_tool_for_testers/Actions/register_auth_action.dart';
 import 'package:scenario_management_tool_for_testers/Actions/reset.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';

@@ -1,7 +1,7 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 
 class LoginAction extends ReduxAction<AppState> {
   final String email;
@@ -11,6 +11,9 @@ class LoginAction extends ReduxAction<AppState> {
 
   @override
   Future<AppState> reduce() async {
+    // Set loginStatus to loading
+    //dispatch(SetLoginStatusAction(LoginStatus.loading));
+    //LoginStatus.loading;
     User? user = await authenticateUser(email, password);
     String? designation;
     if (user != null) {
@@ -19,9 +22,15 @@ class LoginAction extends ReduxAction<AppState> {
           .doc(user.uid)
           .get();
       designation = userDoc['role'] ?? 'Junior Tester';
-    }
 
-    return state.copy(user: user, designation: designation ?? 'Junior Tester');
+      // Login successful
+      return state.copy(
+        user: user,
+        designation: designation,
+        loginStatus: LoginStatus.success,
+      );
+    }
+    return state.copy(loginStatus: LoginStatus.failure);
   }
 
   Future<User?> authenticateUser(String email, String password) async {
@@ -32,5 +41,12 @@ class LoginAction extends ReduxAction<AppState> {
     } catch (e) {
       return null;
     }
+  }
+}
+
+class SetLoginStatusAction extends ReduxAction<AppState> {
+  @override
+  AppState reduce() {
+    return state.copy(loginStatus: LoginStatus.idle);
   }
 }

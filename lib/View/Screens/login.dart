@@ -1,12 +1,11 @@
-import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:async_redux/async_redux.dart';
 import 'package:scenario_management_tool_for_testers/Actions/login_actions.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Class used for login.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -42,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void _login() async {
+  Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter email and password")),
@@ -53,14 +52,8 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       isLoading = true;
     });
-
-    // Simulate a network call
-    await Future.delayed(const Duration(seconds: 2));
-
-    // Save login information
     await _saveLoginInfo();
 
-    // Dispatch login action and navigate after loading ends
     store.dispatch(
       LoginAction(
         email: _emailController.text,
@@ -68,24 +61,36 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    setState(() {
-      isLoading = false;
+    store.onChange.listen((state) {
+      setState(() {
+        isLoading = false;
+      });
     });
-
-    Navigator.pushReplacementNamed(context, Routes.dashboard);
   }
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       converter: (store) => store.state,
-      builder: (context, state) {
-        if (state.user != null) {
-          Future.delayed(Duration.zero, () {
-            Navigator.pushReplacementNamed(context, Routes.dashboard);
+      onDidChange: (context, store, state) {
+        if (state.loginStatus == LoginStatus.success) {
+          ScaffoldMessenger.of(context!).showSnackBar(
+            const SnackBar(content: Text("Login successful! Redirecting...")),
+          );
+          Future.delayed(const Duration(seconds: 2), () {
+            Navigator.pushNamedAndRemoveUntil(
+                context, Routes.dashboard, (route) => false);
+            //Navigator.pushReplacementNamed(context, Routes.dashboard);
           });
+          store.dispatch(SetLoginStatusAction());
+        } else if (state.loginStatus == LoginStatus.failure) {
+          ScaffoldMessenger.of(context!).showSnackBar(
+            const SnackBar(content: Text("Login failed! Please try again.")),
+          );
+          store.dispatch(SetLoginStatusAction());
         }
-
+      },
+      builder: (context, state) {
         return Scaffold(
           body: Stack(
             children: [
@@ -113,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: !passwordVisible,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: "Password",
+                        labelText: 'Password',
                         suffixIcon: IconButton(
                           icon: Icon(passwordVisible
                               ? Icons.visibility
@@ -128,9 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: isLoading
-                          ? null
-                          : _login, // Disable button when loading
+                      onPressed: isLoading ? null : _login,
                       child: const Text('Login'),
                     ),
                     TextButton(
@@ -145,6 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
+              // Loading Indicator Overlay
               if (isLoading)
                 Container(
                   color: Colors.black.withOpacity(0.5),

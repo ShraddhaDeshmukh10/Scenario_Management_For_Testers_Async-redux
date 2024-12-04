@@ -6,9 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/Actions/fetchsenario.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
-import 'package:scenario_management_tool_for_testers/Services/sign_out.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
-import 'package:scenario_management_tool_for_testers/viewmodel/dashviewmodel.dart';
+import 'package:scenario_management_tool_for_testers/state/factort.dart';
+import 'package:scenario_management_tool_for_testers/widgets/sign_out.dart';
+import 'package:scenario_management_tool_for_testers/state/appstate.dart';
+import 'package:scenario_management_tool_for_testers/state/dashviewmodel.dart';
 
 /// This class defines the main DashboardPage in the application, displaying user-specific
 /// data including scenarios, assignments, and test cases. The page provides search, view,
@@ -352,6 +353,10 @@ void _addTestCaseDialog(BuildContext context, String scenarioId, ViewModel vm) {
       }
     },
   );
+  nameController.dispose();
+  bugIdController.dispose();
+  commentsController.dispose();
+  descriptionController.dispose();
 }
 
 ///opens a dialog to delete a scenario only by lead tester
@@ -567,4 +572,6 @@ void _addScenarioDialog(BuildContext context, ViewModel vm) {
       );
     },
   );
+  nameController.dispose();
+  shortDescriptionController.dispose();
 }

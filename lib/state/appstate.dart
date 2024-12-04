@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:scenario_management_tool_for_testers/Services/response.dart';
+import 'package:scenario_management_tool_for_testers/constants/response.dart';
 
 enum RegistrationStatus { idle, success, failure }
+
+enum LoginStatus { idle, success, failure, loading }
 
 class AppState {
   final User? user;
   final String? designation;
   final RegistrationStatus registrationStatus;
+  final LoginStatus loginStatus;
   final List<Map<String, dynamic>> scenarios;
   final List<Map<String, dynamic>> comments;
   final List<Map<String, dynamic>> addtestcase;
@@ -17,6 +20,7 @@ class AppState {
 
   AppState({
     this.registrationStatus = RegistrationStatus.idle,
+    this.loginStatus = LoginStatus.idle,
     this.response,
     this.user,
     this.filteredScenarios,
@@ -30,6 +34,7 @@ class AppState {
 
   AppState copy({
     RegistrationStatus? registrationStatus,
+    LoginStatus? loginStatus,
     DataResponse? response,
     User? user,
     String? designation,
@@ -42,6 +47,7 @@ class AppState {
   }) =>
       AppState(
         registrationStatus: registrationStatus ?? this.registrationStatus,
+        loginStatus: loginStatus ?? this.loginStatus,
         response: response ?? this.response,
         user: user,
         designation: designation ?? this.designation,

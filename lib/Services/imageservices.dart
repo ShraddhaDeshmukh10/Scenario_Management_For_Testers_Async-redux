@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:scenario_management_tool_for_testers/Services/dataservice.dart';
-import 'package:scenario_management_tool_for_testers/Services/response.dart'; // For MediaType
+import 'package:scenario_management_tool_for_testers/constants/response.dart'; // For MediaType
 
 class Services extends DataService {
   final fileUploadUrl = "https://dev.orderbookings.com/api/image-test-upload";
