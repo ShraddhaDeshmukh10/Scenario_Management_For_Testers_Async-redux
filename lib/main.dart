@@ -2,12 +2,12 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
+import 'package:scenario_management_tool_for_testers/View/connector/dashboardconnector.dart';
+import 'package:scenario_management_tool_for_testers/View/connector/scenario_connector.dart';
 import 'package:scenario_management_tool_for_testers/constants/locator.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/dashboard.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/edit_page.dart';
+import 'package:scenario_management_tool_for_testers/View/Screens/edit_history_page.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/login.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/registerscreen.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/scenariodetail.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/splash.dart';
 import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,16 +51,21 @@ class MyApp extends StatelessWidget {
               case Routes.register:
                 return MaterialPageRoute(builder: (_) => const RegisterPage());
               case Routes.dashboard:
-                return MaterialPageRoute(builder: (_) => const DashboardPage());
+                return MaterialPageRoute(
+                  builder: (_) =>
+                      const DashboardConnector(), // Use DashboardConnector to inject the ViewModel
+                );
+              // case Routes.dashboard:
+              //   return MaterialPageRoute(builder: (_) => const DashboardPage());
               case Routes.editpagedetail:
                 return MaterialPageRoute(
                     builder: (_) => EditHistoryPage(
                         scenarioId: args['scenarioId'],
                         roleColor: args['roleColor'],
                         designation: args['designation']));
-              case Routes.scenariodetail:
+              case Routes.scenariodetailconnector:
                 return MaterialPageRoute(
-                  builder: (_) => ScenarioDetailPage(
+                  builder: (_) => ScenarioDetailConnector(
                     scenario: args['scenario'],
                     roleColor: args['roleColor'],
                     designation: args['designation'] ?? '',

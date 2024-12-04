@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:scenario_management_tool_for_testers/Helper/tag_helper.dart';
+import 'package:scenario_management_tool_for_testers/widgets/card_decoration.dart';
 
 class EditHistoryPage extends StatelessWidget {
   final String scenarioId;
@@ -115,7 +116,7 @@ class EditHistoryPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (testCaseId != null)
-                        _buildInfoRow(
+                        buildInfoRow(
                           icon: Icons.assignment,
                           label: "Test Case ID",
                           value: testCaseId,
@@ -123,13 +124,13 @@ class EditHistoryPage extends StatelessWidget {
                               const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       if (tags != null)
-                        _buildInfoRow(
+                        buildInfoRow(
                           icon: Icons.label,
                           label: "Tags",
                           value: tags.join(', '),
                           valueStyle: TextStyle(color: getTagColor(tags)),
                         ),
-                      _buildInfoRow(
+                      buildInfoRow(
                         icon: Icons.edit,
                         label: "Edited By",
                         value: editedBy,
@@ -137,7 +138,7 @@ class EditHistoryPage extends StatelessWidget {
                             fontSize: 12, fontStyle: FontStyle.italic),
                       ),
                       if (timestamp != null)
-                        _buildInfoRow(
+                        buildInfoRow(
                           icon: Icons.access_time,
                           label: "Timestamp",
                           value: timestamp,
@@ -152,39 +153,6 @@ class EditHistoryPage extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildInfoRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    TextStyle? valueStyle,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.black),
-        const SizedBox(width: 8),
-        Text(
-          "$label: ",
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: valueStyle ??
-                const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 }

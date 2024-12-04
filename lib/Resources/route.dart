@@ -6,6 +6,6 @@ class Routes {
   static const String assignedlist = '/assignedlist';
   static const String commentlist = '/commentlist';
   static const String testcaselist = '/testcaselist';
-  static const String scenariodetail = '/scenariodetail';
+  static const String scenariodetailconnector = '/scenariodetail';
   static const String editpagedetail = '/editpagedetail';
 }
