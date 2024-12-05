@@ -87,7 +87,8 @@ class EditHistoryPage extends StatelessWidget {
                   : null;
 
               // Determine card color based on tags
-              final cardColor = tags != null ? getTagColor(tags) : Colors.white;
+              final cardColor =
+                  tags != null ? Helper.getTagColor(tags) : Colors.white;
               return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0), // Rounded corners
@@ -128,7 +129,8 @@ class EditHistoryPage extends StatelessWidget {
                           icon: Icons.label,
                           label: "Tags",
                           value: tags.join(', '),
-                          valueStyle: TextStyle(color: getTagColor(tags)),
+                          valueStyle:
+                              TextStyle(color: Helper.getTagColor(tags)),
                         ),
                       buildInfoRow(
                         icon: Icons.edit,

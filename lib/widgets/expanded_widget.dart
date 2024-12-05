@@ -73,7 +73,7 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
     final testCase = widget.testCase;
 
     final designation = widget.designation;
-    final tagColor = getTagColor(testCase['tags']);
+    final tagColor = Helper.getTagColor(testCase['tags']);
 
     final createdAt = testCase['createdAt']; // Assume it's a DateTime
     final formattedDate = createdAt != null

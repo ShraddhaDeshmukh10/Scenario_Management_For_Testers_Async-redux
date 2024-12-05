@@ -1,16 +1,18 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:scenario_management_tool_for_testers/actions/add_test_action.dart';
-import 'package:scenario_management_tool_for_testers/actions/filter_scenario.dart';
-import 'package:scenario_management_tool_for_testers/actions/upload_image.dart';
+import 'package:scenario_management_tool_for_testers/main.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/add_test_action.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/filter_scenario.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/upload_image.dart';
 import 'package:scenario_management_tool_for_testers/constants/response.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
-import 'package:scenario_management_tool_for_testers/actions/fetch_senario.dart';
-import 'package:scenario_management_tool_for_testers/actions/update_senario.dart';
-import 'package:scenario_management_tool_for_testers/actions/delete_senario.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/fetch_senario.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/update_senario.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/delete_senario.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page.dart';
 
 class ViewModel extends Vm {
   final String? designation;
@@ -117,5 +119,14 @@ class ViewModel extends Vm {
         tag: tag, // Ensure you're passing tag here
       )),
     );
+  }
+}
+
+class Factory extends VmFactory<AppState, DashboardPage, ViewModel> {
+  Factory() : super();
+
+  @override
+  ViewModel fromStore() {
+    return ViewModel.fromStore(store);
   }
 }
