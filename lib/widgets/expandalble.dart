@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -31,35 +30,64 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
   Future<void> _deleteTestCase(
       String testCaseId, Map<String, dynamic> testCase) async {
     try {
+      // Check if the testCaseId is not null and correct
+      print("Deleting test case with ID: $testCaseId");
+
+      // Attempt to delete the test case from Firestore
       await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(widget.scenarioId)
           .collection('testCases')
           .doc(testCaseId)
           .delete();
+
+      // Optionally, trigger a fetch to refresh the list
       store.dispatch(FetchTestCasesAction(widget.scenarioId));
+
+      // Provide feedback to the user
+      Fluttertoast.showToast(
+        msg: "Test case deleted successfully!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } catch (e) {
       print("Failed to delete test case: $e");
+
+      // Provide feedback if deletion fails
+      Fluttertoast.showToast(
+        msg: "Failed to delete test case: $e",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final testCase = widget.testCase;
+
     final designation = widget.designation;
     final tagColor = getTagColor(testCase['tags']);
-    final createdAt = testCase['createdAt'] as Timestamp?;
+
+    final createdAt = testCase['createdAt']; // Assume it's a DateTime
     final formattedDate = createdAt != null
-        ? DateFormat("dd-MM-yyyy. hh:mm a").format(createdAt.toDate())
+        ? DateFormat("dd-MM-yyyy, hh:mm a").format(createdAt) // Format DateTime
         : 'N/A';
 
     final descriptionController =
         TextEditingController(text: testCase['description'] ?? '');
     final commentsController =
         TextEditingController(text: testCase['comments'] ?? '');
-    String? selectedTag = testCase['tags']?.isNotEmpty ?? false
-        ? (testCase['tags'] is List ? testCase['tags'][0] : testCase['tags'])
-        : null;
+    String? selectedTag =
+        (testCase['tags'] is List && testCase['tags'].isNotEmpty)
+            ? testCase['tags'][0]
+            : null;
 
     final tagsOptions = ["Passed", "Failed", "In Review", "Completed"];
     return Card(
@@ -146,6 +174,14 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                           },
                           icon: const Icon(Icons.add_comment),
                         ),
+                        if (designation != 'Junior Tester')
+                          IconButton(
+                            tooltip: "Delete",
+                            color: Colors.red,
+                            icon: const Icon(Icons.delete),
+                            onPressed: () =>
+                                _deleteTestCase(testCase['docId'], testCase),
+                          ),
                         IconButton(
                           color: Colors.blue,
                           tooltip: "Save",
@@ -155,6 +191,8 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                             final comments = commentsController.text;
                             final tags =
                                 selectedTag != null ? [selectedTag] : [];
+                            final testCaseId = testCase['docId'] ??
+                                ''; // Provide a default empty string if null
 
                             if (description.isEmpty) {
                               Fluttertoast.showToast(
@@ -182,7 +220,23 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               return;
                             }
 
+                            // Ensure docId is not null before updating
+                            if (testCase['docId'] == null) {
+                              Fluttertoast.showToast(
+                                msg: "Test case ID is missing!",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                              return;
+                            }
+
                             try {
+                              print(
+                                  "Attempting to save test case with ID: ${testCase['docId']}");
+
                               await FirebaseFirestore.instance
                                   .collection('scenarios')
                                   .doc(widget.scenarioId)
@@ -194,18 +248,11 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                                 'tags': tags,
                                 'updatedAt': FieldValue.serverTimestamp(),
                               });
-                              await FirebaseFirestore.instance
-                                  .collection('scenarios')
-                                  .doc(widget.scenarioId)
-                                  .collection('changes')
-                                  .add({
-                                'timestamp': FieldValue.serverTimestamp(),
-                                'editedBy':
-                                    FirebaseAuth.instance.currentUser?.email ??
-                                        'unknown_user',
-                                'testCaseId': testCase['bugId'],
-                                'tags': tags,
-                              });
+
+                              print("Test case saved successfully!");
+
+                              store.dispatch(
+                                  FetchTestCasesAction(widget.scenarioId));
 
                               Fluttertoast.showToast(
                                 msg: "Test case saved successfully!",
@@ -215,9 +262,9 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                                 textColor: Colors.white,
                                 fontSize: 16.0,
                               );
-                              store.dispatch(
-                                  FetchTestCasesAction(widget.scenarioId));
                             } catch (e) {
+                              print("Failed to save changes: $e");
+
                               Fluttertoast.showToast(
                                 msg: "Failed to save changes: $e",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -228,15 +275,7 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               );
                             }
                           },
-                        ),
-                        if (designation != 'Junior Tester')
-                          IconButton(
-                            tooltip: "Delete",
-                            color: Colors.red,
-                            icon: const Icon(Icons.delete),
-                            onPressed: () =>
-                                _deleteTestCase(testCase['docId'], testCase),
-                          ),
+                        )
                       ],
                     ),
                     Padding(

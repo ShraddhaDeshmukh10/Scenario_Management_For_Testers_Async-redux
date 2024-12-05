@@ -11,9 +11,6 @@ class LoginAction extends ReduxAction<AppState> {
 
   @override
   Future<AppState> reduce() async {
-    // Set loginStatus to loading
-    //dispatch(SetLoginStatusAction(LoginStatus.loading));
-    //LoginStatus.loading;
     User? user = await authenticateUser(email, password);
     String? designation;
     if (user != null) {

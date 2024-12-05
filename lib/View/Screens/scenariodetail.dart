@@ -7,6 +7,7 @@ import 'package:scenario_management_tool_for_testers/widgets/expandalble.dart';
 
 ///This class takes scenario, roleColor, and designation as inputs, with scenario details rendered across various sections (Scenario Details, Test Cases, Comments, etc.).
 ///Conditional rendering using if allows certain actions only for lead tester and developer, such as viewing change history or deleting test cases.
+
 class ScenarioDetailPage extends StatelessWidget {
   final Map<String, dynamic> scenario;
   final Color roleColor;
@@ -32,7 +33,10 @@ class ScenarioDetailPage extends StatelessWidget {
         actions: [
           if (designation != 'Junior Tester') ...[
             ElevatedButton(
-              child: const Text("Show Edit History"),
+              child: const Text(
+                "Show Edit History",
+                style: TextStyle(color: Colors.black),
+              ),
               onPressed: () {
                 Navigator.pushNamed(context, Routes.editpagedetail, arguments: {
                   'scenarioId': scenario['docId'],
@@ -110,8 +114,8 @@ class ScenarioDetailPage extends StatelessWidget {
                         icon: Icons.calendar_today,
                         label: "Created At",
                         value: scenario['createdAt'] != null
-                            ? DateFormat("dd-MM-yyyy, hh:mm a").format(
-                                (scenario['createdAt'] as Timestamp).toDate())
+                            ? DateFormat("dd-MM-yyyy, hh:mm a")
+                                .format(scenario['createdAt'])
                             : 'N/A',
                         valueStyle: const TextStyle(fontSize: 12),
                       ),

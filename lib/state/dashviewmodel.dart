@@ -5,6 +5,8 @@ import 'package:scenario_management_tool_for_testers/Actions/add_test_action.dar
 import 'package:scenario_management_tool_for_testers/Actions/filterscenario.dart';
 import 'package:scenario_management_tool_for_testers/Actions/uploadimage.dart';
 import 'package:scenario_management_tool_for_testers/constants/response.dart';
+import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
+import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 import 'package:scenario_management_tool_for_testers/Actions/fetchsenario.dart';
 import 'package:scenario_management_tool_for_testers/Actions/updatesenario.dart';
@@ -12,8 +14,8 @@ import 'package:scenario_management_tool_for_testers/Actions/deletesenario.dart'
 
 class ViewModel extends Vm {
   final String? designation;
-  final List<Map<String, dynamic>> scenarios;
-  List<Map<String, dynamic>> filteredScenarios; // Filtered scenarios
+  final List<Scenario> scenarios;
+  final List<Scenario> filteredScenarios;
   final void Function(String filter) filterScenarios;
   final void Function() clearFilters;
   final Color roleColor;
@@ -22,21 +24,21 @@ class ViewModel extends Vm {
   final void Function(String, Map<String, dynamic>) updateScenario;
   final Function(String?) searchScenarios;
   final void Function(String docId) deleteScenario;
-  final List<Map<String, dynamic>> testCases;
+  final List<TestCase> testCases; // Change this to List<TestCase>
   final List<Map<String, dynamic>> changeHistory;
   final DataResponse? response;
   final void Function(Uint8List fileBytes, String fileName) onUploadImage;
-
   final void Function(
-      String project,
-      String bugId,
-      String shortDescription,
-      String testCaseName,
-      String scenario,
-      String comments,
-      String description,
-      String attachment,
-      String? tag) addtestcase;
+    String project,
+    String bugId,
+    String shortDescription,
+    String testCaseName,
+    String scenario,
+    String comments,
+    String description,
+    String attachment,
+    String? tag,
+  ) addtestcase;
 
   ViewModel({
     required this.response,
@@ -55,7 +57,13 @@ class ViewModel extends Vm {
     required this.fetchScenarios,
     required this.updateScenario,
     required this.searchScenarios,
-  }) : super(equals: [scenarios, comments, filteredScenarios, response]);
+  }) : super(equals: [
+          scenarios,
+          comments,
+          filteredScenarios,
+          response,
+          testCases
+        ]);
 
   static ViewModel fromStore(Store<AppState> store) {
     String designation = store.state.designation ?? '';
@@ -74,8 +82,8 @@ class ViewModel extends Vm {
 
     return ViewModel(
       response: store.state.response,
-      testCases: store.state.testCases,
       changeHistory: store.state.changeHistory,
+      testCases: store.state.testCases,
       scenarios: store.state.scenarios,
       filteredScenarios: store.state.filteredScenarios ?? store.state.scenarios,
       filterScenarios: (String filter) {
@@ -106,7 +114,7 @@ class ViewModel extends Vm {
         comments: comments,
         description: description,
         attachment: attachment,
-        tag: tag,
+        tag: tag, // Ensure you're passing tag here
       )),
     );
   }

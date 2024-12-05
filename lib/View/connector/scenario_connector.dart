@@ -2,10 +2,12 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:scenario_management_tool_for_testers/Actions/mainactions.dart';
 import 'package:scenario_management_tool_for_testers/View/Screens/scenariodetail.dart';
+import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
+import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 
 class ScenarioDetailConnector extends StatelessWidget {
-  final Map<String, dynamic> scenario;
+  final Scenario scenario;
   final Color roleColor;
   final String designation;
 
@@ -18,16 +20,17 @@ class ScenarioDetailConnector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, List<Map<String, dynamic>>>(
+    return StoreConnector<AppState, List<TestCase>>(
       converter: (store) => store.state.testCases,
-      onInit: (store) =>
-          store.dispatch(FetchTestCasesAction(scenario['docId'])),
+      onInit: (store) {
+        store.dispatch(FetchTestCasesAction(scenario.docId));
+      },
       builder: (context, testCases) {
         return ScenarioDetailPage(
-          scenario: scenario,
+          scenario: scenario.toMap(),
           roleColor: roleColor,
           designation: designation,
-          testCases: testCases,
+          testCases: testCases.map((testCase) => testCase.toMap()).toList(),
         );
       },
     );

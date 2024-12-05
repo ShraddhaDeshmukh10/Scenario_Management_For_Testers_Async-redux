@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 
 ///Queries the 'testCases' subcollection under a particular scenario document
@@ -8,22 +9,28 @@ class FetchTestCasesAction extends ReduxAction<AppState> {
   final String scenarioId;
 
   FetchTestCasesAction(this.scenarioId);
-
   @override
   Future<AppState?> reduce() async {
     try {
+      // Debugging: Print before fetching data
+      print("Fetching test cases for scenario: $scenarioId");
+
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(scenarioId)
           .collection('testCases')
           .get();
 
-      List<Map<String, dynamic>> testCases = snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
+      List<TestCase> testCases = snapshot.docs.map((doc) {
+        return TestCase.fromFirestore(doc);
       }).toList();
+
+      // Debugging: Check if testCases list is populated
+      print("Fetched ${testCases.length} test cases");
 
       return state.copy(testCases: testCases);
     } catch (e) {
+      print("Error fetching test cases: $e");
       throw UserException("Error fetching test cases: $e");
     }
   }
@@ -68,13 +75,20 @@ class DeleteTestCaseAction extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
     try {
+      // Delete the test case from Firestore
       await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(scenarioId)
           .collection('testCases')
           .doc(testCaseId)
           .delete();
-      return state;
+
+      // Update local state
+      final updatedTestCases = state.testCases
+          .where((testCase) => testCase.docId != testCaseId)
+          .toList();
+
+      return state.copy(testCases: updatedTestCases);
     } catch (e) {
       throw UserException("Failed to delete test case: $e");
     }

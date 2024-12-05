@@ -13,16 +13,16 @@ class FetchScenariosAction extends ReduxAction<AppState> {
       final firebaseService = FirebaseService();
       final scenarios = await firebaseService.fetchScenariosFromFirebase();
 
-      // Filter scenarios if a project name is provided
       final filteredScenarios = projectName != null
           ? scenarios
-              .where((scenario) => (scenario['projectName'] ?? '')
+              .where((scenario) => scenario.projectName
                   .toLowerCase()
                   .contains(projectName!.toLowerCase()))
               .toList()
           : scenarios;
 
-      return state.copy(scenarios: filteredScenarios);
+      return state.copy(
+          scenarios: scenarios, filteredScenarios: filteredScenarios);
     } catch (e) {
       print("Error fetching scenarios: $e");
       throw Exception("Failed to fetch scenarios.");

@@ -1,34 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Future<List<Map<String, dynamic>>> fetchScenariosFromFirebase() async {
+
+  Future<List<Scenario>> fetchScenariosFromFirebase() async {
     try {
       QuerySnapshot snapshot = await _firestore.collection('scenarios').get();
-      return snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
-      }).toList();
+      return snapshot.docs
+          .map((doc) => Scenario.fromFirestore(
+              doc.id, doc.data() as Map<String, dynamic>))
+          .toList(); // Explicitly map to List<Scenario>
     } catch (e) {
       print("Error fetching scenarios: $e");
       return [];
     }
   }
 
-  Future<void> updateScenarioInFirebase(
-      String docId, Map<String, dynamic> updatedData) async {
+  Future<void> updateScenarioInFirebase(String docId, Scenario scenario) async {
     try {
-      // Update the scenario in the Firestore collection
-      await _firestore.collection('scenarios').doc(docId).update(updatedData);
+      await _firestore
+          .collection('scenarios')
+          .doc(docId)
+          .update(scenario.toFirestore());
     } catch (e) {
       print("Error updating scenario: $e");
       throw Exception("Failed to update scenario");
     }
   }
 
-  Future<void> addScenarioToFirebase(Map<String, dynamic> newScenario) async {
+  Future<void> addScenarioToFirebase(Scenario newScenario) async {
     try {
-      // Add a new document to the 'scenarios' collection
-      await _firestore.collection('scenarios').add(newScenario);
+      await _firestore.collection('scenarios').add(newScenario.toFirestore());
     } catch (e) {
       print("Error adding scenario: $e");
       throw Exception("Failed to add scenario");

@@ -10,7 +10,7 @@ class FilterScenariosAction extends ReduxAction<AppState> {
   AppState reduce() {
     print("Filter applied: $filter");
     final filtered = state.scenarios.where((scenario) {
-      return scenario['projectName']?.toLowerCase() == filter.toLowerCase();
+      return scenario.projectName.toLowerCase() == filter.toLowerCase();
     }).toList();
     print("Filtered scenarios: $filtered");
     return state.copy(filteredScenarios: filtered);

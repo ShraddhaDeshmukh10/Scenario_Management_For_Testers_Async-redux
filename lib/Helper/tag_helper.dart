@@ -27,7 +27,7 @@ Color getColorFromTag(String? tag) {
     case "Failed":
       return Colors.red; // Red for "Failed"
     case "In Review":
-      return Colors.yellowAccent.shade400; // Yellow for "In Review"
+      return Color.fromARGB(255, 190, 175, 6); // Yellow for "In Review"
     case "Completed":
       return Colors.orange; // Orange for "Completed"
     default:

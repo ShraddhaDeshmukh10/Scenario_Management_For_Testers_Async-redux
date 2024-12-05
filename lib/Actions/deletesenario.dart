@@ -17,7 +17,7 @@ class DeleteScenarioAction extends ReduxAction<AppState> {
 
       // Update state after deletion
       final updatedScenarios =
-          state.scenarios.where((s) => s['docId'] != docId).toList();
+          state.scenarios.where((s) => s.docId != docId).toList();
       return state.copy(scenarios: updatedScenarios);
     } catch (e) {
       print("Error deleting scenario: $e");

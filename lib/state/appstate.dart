@@ -1,21 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scenario_management_tool_for_testers/constants/response.dart';
+import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
+import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 
 enum RegistrationStatus { idle, success, failure }
 
 enum LoginStatus { idle, success, failure, loading }
 
 class AppState {
+  final List<Scenario> scenarios;
+  final List<Scenario>? filteredScenarios;
   final User? user;
   final String? designation;
   final RegistrationStatus registrationStatus;
   final LoginStatus loginStatus;
-  final List<Map<String, dynamic>> scenarios;
+  //final List<Map<String, dynamic>> scenarios;
   final List<Map<String, dynamic>> comments;
   final List<Map<String, dynamic>> addtestcase;
-  final List<Map<String, dynamic>> testCases;
+  final List<TestCase> testCases;
+  //final List<Map<String, dynamic>> testCases;
   final List<Map<String, dynamic>> changeHistory;
-  final List<Map<String, dynamic>>? filteredScenarios;
+  //final List<Map<String, dynamic>>? filteredScenarios;
   final DataResponse? response;
 
   AppState({
@@ -33,15 +38,18 @@ class AppState {
   });
 
   AppState copy({
+    List<Scenario>? scenarios,
+    List<Scenario>? filteredScenarios,
     RegistrationStatus? registrationStatus,
     LoginStatus? loginStatus,
     DataResponse? response,
     User? user,
     String? designation,
-    List<Map<String, dynamic>>? filteredScenarios,
-    List<Map<String, dynamic>>? scenarios,
+    //List<Map<String, dynamic>>? filteredScenarios,
+    //List<Map<String, dynamic>>? scenarios,
     List<Map<String, dynamic>>? addtestcase,
-    List<Map<String, dynamic>>? testCases,
+    final List<TestCase>? testCases,
+    //List<Map<String, dynamic>>? testCases,
     List<Map<String, dynamic>>? changeHistory,
     List<Map<String, dynamic>>? comments,
   }) =>

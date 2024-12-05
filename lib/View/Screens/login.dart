@@ -116,6 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       controller: _passwordController,
                       obscureText: !passwordVisible,
+                      maxLength: 10,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: 'Password',

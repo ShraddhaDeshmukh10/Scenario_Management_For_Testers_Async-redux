@@ -1,6 +1,7 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 import 'package:scenario_management_tool_for_testers/state/appstate.dart';
 
 class AddTestCaseAction extends ReduxAction<AppState> {
@@ -27,10 +28,9 @@ class AddTestCaseAction extends ReduxAction<AppState> {
   });
 
   @override
-  Future<AppState> reduce() async {
+  Future<AppState?> reduce() async {
     final userEmail =
         FirebaseAuth.instance.currentUser?.email ?? 'unknown_user';
-
     try {
       // Add the test case to Firestore
       DocumentReference docRef = await FirebaseFirestore.instance
@@ -45,39 +45,29 @@ class AddTestCaseAction extends ReduxAction<AppState> {
         'comments': comments,
         'description': description,
         'attachment': attachment,
-        'tags': tag ?? 'Unspecified',
+        'tags': [tag ?? 'Unspecified'], // Store as an array
         'createdBy': userEmail,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // Add the test case to the state
-      final newTestCase = {
-        'project': project,
-        'bugId': bugId,
-        'shortDescription': shortDescription,
-        'testCaseName': testCaseName,
-        'comments': comments,
-        'description': description,
-        'attachment': attachment,
-        'tags': tag ?? 'Unspecified',
-        'createdBy': userEmail,
-        'createdAt': FieldValue.serverTimestamp(),
-        'docId': docRef.id,
-      };
+      // Create a local TestCase instance
+      final newTestCase = TestCase(
+        docId: docRef.id,
+        name: testCaseName,
+        bugId: bugId,
+        tags: [tag ?? 'Unspecified'],
+        comments: comments,
+        description: description,
+        createdBy: userEmail,
+        createdAt: DateTime.now(), // Assume `serverTimestamp` gets synced later
+      );
 
-      final updatedScenarios = state.scenarios.map((scenario) {
-        if (scenario['docId'] == scenarioId) {
-          final testCases = List.from(scenario['testCases'] ?? []);
-          testCases.add(newTestCase);
-          return {...scenario, 'testCases': testCases};
-        }
-        return scenario;
-      }).toList();
-
-      return state.copy(scenarios: updatedScenarios);
+      // Update the state with the new test case
+      final updatedTestCases = [...state.testCases, newTestCase];
+      return state.copy(testCases: updatedTestCases);
     } catch (e) {
       print("Error adding test case: $e");
-      throw Exception("Failed to add test case.");
+      throw UserException("Failed to add test case.");
     }
   }
 }

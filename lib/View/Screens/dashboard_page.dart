@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
+import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 import 'package:scenario_management_tool_for_testers/state/dashviewmodel.dart';
 import 'package:scenario_management_tool_for_testers/widgets/app_bar_widget.dart';
 import 'package:scenario_management_tool_for_testers/widgets/drawer_widget.dart';
@@ -75,7 +76,7 @@ class DashboardPage extends StatelessWidget {
               child: ListView.builder(
                 itemCount: vm.filteredScenarios.length,
                 itemBuilder: (context, index) {
-                  final scenario = vm.filteredScenarios[index];
+                  final Scenario scenario = vm.filteredScenarios[index];
                   return Card(
                     shape: RoundedRectangleBorder(
                       borderRadius:
@@ -108,10 +109,11 @@ class DashboardPage extends StatelessWidget {
                       ),
                       child: ListTile(
                         title: Text(
-                          scenario['name'] ?? 'Unnamed Scenario',
+                          scenario.name ?? 'Unamed Scenario',
+                          // scenario.projectId ?? 'Not found Scenario ID',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 15,
                           ),
                         ),
                         onTap: () {
@@ -126,23 +128,28 @@ class DashboardPage extends StatelessWidget {
                           );
                         },
                         subtitle: Text(
-                          scenario['shortDescription'] ?? 'N/A',
+                          scenario.shortDescription ?? 'N/A',
+                          style: TextStyle(fontSize: 12),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                addTestCaseDialog(
-                                    context, scenario['docId'], vm);
+                                addTestCaseDialog(context, scenario.docId, vm);
                               },
-                              child: Text("Add Test Case"),
+                              child: Text(
+                                "Add Test Case",
+                                style: TextStyle(
+                                    color: vm.roleColor,
+                                    //color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
                             if (vm.designation != 'Junior Tester')
                               IconButton(
                                 onPressed: () {
-                                  deleteScenarioDialog(
-                                      context, scenario['docId']);
+                                  deleteScenarioDialog(context, scenario.docId);
                                 },
                                 icon: Icon(Icons.delete),
                               ),
