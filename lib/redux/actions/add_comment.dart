@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:scenario_management_tool_for_testers/state/appstate.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 
 ///The action verifies that the commentText is not empty,
 ///then uses Firebase Authentication to retrieve the current user’s email

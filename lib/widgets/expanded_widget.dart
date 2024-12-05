@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:scenario_management_tool_for_testers/Actions/mainactions.dart';
-import 'package:scenario_management_tool_for_testers/Helper/tag_helper.dart';
-import 'package:scenario_management_tool_for_testers/View/Screens/testcasecommentpage.dart';
+import 'package:scenario_management_tool_for_testers/helper/tag_helper.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/main_actions.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/test_comment_page.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 
 class ExpandableTestCaseCard extends StatefulWidget {

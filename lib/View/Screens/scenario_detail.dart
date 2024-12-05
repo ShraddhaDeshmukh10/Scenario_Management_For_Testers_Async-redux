@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/widgets/card_decoration.dart';
-import 'package:scenario_management_tool_for_testers/widgets/expandalble.dart';
+import 'package:scenario_management_tool_for_testers/widgets/expanded_widget.dart';
 
 ///This class takes scenario, roleColor, and designation as inputs, with scenario details rendered across various sections (Scenario Details, Test Cases, Comments, etc.).
 ///Conditional rendering using if allows certain actions only for lead tester and developer, such as viewing change history or deleting test cases.

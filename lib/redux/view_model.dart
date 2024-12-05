@@ -1,16 +1,16 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:scenario_management_tool_for_testers/Actions/add_test_action.dart';
-import 'package:scenario_management_tool_for_testers/Actions/filterscenario.dart';
-import 'package:scenario_management_tool_for_testers/Actions/uploadimage.dart';
+import 'package:scenario_management_tool_for_testers/actions/add_test_action.dart';
+import 'package:scenario_management_tool_for_testers/actions/filter_scenario.dart';
+import 'package:scenario_management_tool_for_testers/actions/upload_image.dart';
 import 'package:scenario_management_tool_for_testers/constants/response.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
-import 'package:scenario_management_tool_for_testers/state/appstate.dart';
-import 'package:scenario_management_tool_for_testers/Actions/fetchsenario.dart';
-import 'package:scenario_management_tool_for_testers/Actions/updatesenario.dart';
-import 'package:scenario_management_tool_for_testers/Actions/deletesenario.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/actions/fetch_senario.dart';
+import 'package:scenario_management_tool_for_testers/actions/update_senario.dart';
+import 'package:scenario_management_tool_for_testers/actions/delete_senario.dart';
 
 class ViewModel extends Vm {
   final String? designation;

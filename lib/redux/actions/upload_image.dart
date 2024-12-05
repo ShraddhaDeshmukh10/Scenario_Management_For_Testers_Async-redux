@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:scenario_management_tool_for_testers/Services/dataservice.dart';
 import 'package:scenario_management_tool_for_testers/constants/locator.dart';
 import 'package:scenario_management_tool_for_testers/constants/response.dart';
-import 'package:scenario_management_tool_for_testers/state/appstate.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 
 class UploadImageAction extends ReduxAction<AppState> {
   DataService dataService = locator();

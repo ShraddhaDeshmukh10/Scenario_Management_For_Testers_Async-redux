@@ -1,5 +1,5 @@
 import 'package:async_redux/async_redux.dart';
-import 'package:scenario_management_tool_for_testers/state/appstate.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 
 class FilterScenariosAction extends ReduxAction<AppState> {
   final String filter;

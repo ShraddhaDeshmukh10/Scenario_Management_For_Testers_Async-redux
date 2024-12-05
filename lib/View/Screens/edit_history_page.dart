@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:scenario_management_tool_for_testers/Helper/tag_helper.dart';
+import 'package:scenario_management_tool_for_testers/helper/tag_helper.dart';
 import 'package:scenario_management_tool_for_testers/widgets/card_decoration.dart';
 
 class EditHistoryPage extends StatelessWidget {
