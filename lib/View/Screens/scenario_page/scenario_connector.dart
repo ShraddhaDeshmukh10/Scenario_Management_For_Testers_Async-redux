@@ -1,7 +1,7 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/main_actions.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/scenario_detail.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/scenario_page/scenario_detail.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';

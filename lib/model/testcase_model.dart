@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TestCase {
   final String docId;
-  //final String id;
   final String name;
   final String bugId;
   final List<String> tags; // Updated to List<String>
@@ -14,7 +13,6 @@ class TestCase {
 
   TestCase({
     required this.docId,
-    //required this.id,
     required this.name,
     required this.bugId,
     required this.tags,
@@ -30,8 +28,6 @@ class TestCase {
     final data = doc.data() as Map<String, dynamic>;
     return TestCase(
       docId: doc.id,
-      // id: doc
-      //     .id, // This ensures the Firestore document ID is used as the test case ID
       name: data['name'] ?? '',
       bugId: data['bugId'] ?? '',
       tags: (data['tags'] is List)

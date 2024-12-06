@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
-import 'package:scenario_management_tool_for_testers/view/connector/dashboard_connector.dart';
-import 'package:scenario_management_tool_for_testers/view/connector/scenario_connector.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/change_page/change_history_connector.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page/dashboard_connector.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/scenario_page/scenario_connector.dart';
 import 'package:scenario_management_tool_for_testers/constants/locator.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/edit_history_page.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/login.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/register_screen.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/splash.dart';
@@ -52,17 +52,17 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(builder: (_) => const RegisterPage());
               case Routes.dashboard:
                 return MaterialPageRoute(
-                  builder: (_) =>
-                      const DashboardConnector(), // Use DashboardConnector to inject the ViewModel
+                  builder: (_) => const DashboardConnector(),
                 );
-              // case Routes.dashboard:
-              //   return MaterialPageRoute(builder: (_) => const DashboardPage());
               case Routes.editpagedetail:
                 return MaterialPageRoute(
-                    builder: (_) => EditHistoryPage(
-                        scenarioId: args['scenarioId'],
-                        roleColor: args['roleColor'],
-                        designation: args['designation']));
+                  builder: (_) => ChangeHistoryConnector(
+                    scenarioId: args['scenarioId'],
+                    roleColor: args['roleColor'],
+                    designation: args['designation'],
+                  ),
+                );
+
               case Routes.scenariodetailconnector:
                 return MaterialPageRoute(
                   builder: (_) => ScenarioDetailConnector(

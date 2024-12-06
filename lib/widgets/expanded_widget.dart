@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:scenario_management_tool_for_testers/helper/tag_helper.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/fetch_change_history.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/main_actions.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/test_comment_page.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/comment_page/comment_page_connector.dart';
 
 class ExpandableTestCaseCard extends StatefulWidget {
   final Map<String, dynamic> testCase;
@@ -27,46 +29,6 @@ class ExpandableTestCaseCard extends StatefulWidget {
 
 class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
   bool isExpanded = false;
-  Future<void> _deleteTestCase(
-      String testCaseId, Map<String, dynamic> testCase) async {
-    try {
-      // Check if the testCaseId is not null and correct
-      print("Deleting test case with ID: $testCaseId");
-
-      // Attempt to delete the test case from Firestore
-      await FirebaseFirestore.instance
-          .collection('scenarios')
-          .doc(widget.scenarioId)
-          .collection('testCases')
-          .doc(testCaseId)
-          .delete();
-
-      // Optionally, trigger a fetch to refresh the list
-      store.dispatch(FetchTestCasesAction(widget.scenarioId));
-
-      // Provide feedback to the user
-      Fluttertoast.showToast(
-        msg: "Test case deleted successfully!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    } catch (e) {
-      print("Failed to delete test case: $e");
-
-      // Provide feedback if deletion fails
-      Fluttertoast.showToast(
-        msg: "Failed to delete test case: $e",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +37,9 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
     final designation = widget.designation;
     final tagColor = Helper.getTagColor(testCase['tags']);
 
-    final createdAt = testCase['createdAt']; // Assume it's a DateTime
+    final createdAt = testCase['createdAt'];
     final formattedDate = createdAt != null
-        ? DateFormat("dd-MM-yyyy, hh:mm a").format(createdAt) // Format DateTime
+        ? DateFormat("dd-MM-yyyy, hh:mm a").format(createdAt)
         : 'N/A';
 
     final descriptionController =
@@ -163,9 +125,10 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TestCaseCommentsPage(
+                                builder: (context) => TestCaseCommentsConnector(
                                   scenarioId: widget.scenarioId,
-                                  testCaseId: testCase['docId'],
+                                  testCaseId: testCase[
+                                      'docId'], // Ensure 'docId' is correct key
                                   roleColor: widget.roleColor,
                                   designation: designation,
                                 ),
@@ -191,8 +154,6 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                             final comments = commentsController.text;
                             final tags =
                                 selectedTag != null ? [selectedTag] : [];
-                            final testCaseId = testCase['docId'] ??
-                                ''; // Provide a default empty string if null
 
                             if (description.isEmpty) {
                               Fluttertoast.showToast(
@@ -220,7 +181,6 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               return;
                             }
 
-                            // Ensure docId is not null before updating
                             if (testCase['docId'] == null) {
                               Fluttertoast.showToast(
                                 msg: "Test case ID is missing!",
@@ -234,25 +194,42 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                             }
 
                             try {
-                              print(
-                                  "Attempting to save test case with ID: ${testCase['docId']}");
+                              // Fetch current user's email
+                              final user = FirebaseAuth.instance.currentUser;
+                              final userEmail = user?.email ?? "Unknown User";
 
+                              final testCaseId = testCase['docId'];
+
+                              print(
+                                  "Attempting to save test case with ID: $testCaseId");
+
+                              // Update test case data
                               await FirebaseFirestore.instance
                                   .collection('scenarios')
                                   .doc(widget.scenarioId)
                                   .collection('testCases')
-                                  .doc(testCase['docId'])
+                                  .doc(testCaseId)
                                   .update({
                                 'description': description,
                                 'comments': comments,
                                 'tags': tags,
                                 'updatedAt': FieldValue.serverTimestamp(),
                               });
-
-                              print("Test case saved successfully!");
-
+                              await FirebaseFirestore.instance
+                                  .collection('scenarios')
+                                  .doc(widget.scenarioId)
+                                  .collection('changes')
+                                  .add({
+                                'testCaseId': testCase['bugId'],
+                                'description': description,
+                                'tags': tags,
+                                'editedBy': userEmail,
+                                'timestamp': FieldValue.serverTimestamp(),
+                              });
                               store.dispatch(
                                   FetchTestCasesAction(widget.scenarioId));
+                              store.dispatch(
+                                  FetchChangeHistoryAction(widget.scenarioId));
 
                               Fluttertoast.showToast(
                                 msg: "Test case saved successfully!",
@@ -275,7 +252,7 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               );
                             }
                           },
-                        )
+                        ),
                       ],
                     ),
                     Padding(
@@ -358,5 +335,37 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
         ],
       ),
     );
+  }
+
+  Future<void> _deleteTestCase(
+      String testCaseId, Map<String, dynamic> testCase) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('scenarios')
+          .doc(widget.scenarioId)
+          .collection('testCases')
+          .doc(testCaseId)
+          .delete();
+
+      store.dispatch(FetchTestCasesAction(widget.scenarioId));
+      Fluttertoast.showToast(
+        msg: "Test case deleted successfully!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } catch (e) {
+      print("Failed to delete test case: $e");
+      Fluttertoast.showToast(
+        msg: "Failed to delete test case: $e",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 }

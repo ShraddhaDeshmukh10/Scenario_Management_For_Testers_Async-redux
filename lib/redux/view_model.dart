@@ -2,6 +2,8 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
+import 'package:scenario_management_tool_for_testers/model/change_history.dart';
+import 'package:scenario_management_tool_for_testers/model/comments_model.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/add_test_action.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/filter_scenario.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/upload_image.dart';
@@ -12,7 +14,7 @@ import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/fetch_senario.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/update_senario.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/delete_senario.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page/dashboard_page.dart';
 
 class ViewModel extends Vm {
   final String? designation;
@@ -21,13 +23,13 @@ class ViewModel extends Vm {
   final void Function(String filter) filterScenarios;
   final void Function() clearFilters;
   final Color roleColor;
-  final List<Map<String, dynamic>> comments;
+  final List<Comment> comments;
   final VoidCallback fetchScenarios;
   final void Function(String, Map<String, dynamic>) updateScenario;
   final Function(String?) searchScenarios;
   final void Function(String docId) deleteScenario;
   final List<TestCase> testCases; // Change this to List<TestCase>
-  final List<Map<String, dynamic>> changeHistory;
+  final List<ChangeHistory> changeHistory;
   final DataResponse? response;
   final void Function(Uint8List fileBytes, String fileName) onUploadImage;
   final void Function(

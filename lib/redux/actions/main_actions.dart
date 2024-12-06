@@ -36,34 +36,6 @@ class FetchTestCasesAction extends ReduxAction<AppState> {
   }
 }
 
-///Fetches the most recent change history entries for a scenario.
-class FetchChangeHistoryAction extends ReduxAction<AppState> {
-  final String scenarioId;
-
-  FetchChangeHistoryAction(this.scenarioId);
-
-  @override
-  Future<AppState?> reduce() async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('scenarios')
-          .doc(scenarioId)
-          .collection('changes')
-          .orderBy('timestamp', descending: true)
-          .limit(11)
-          .get();
-
-      List<Map<String, dynamic>> changes = snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
-      }).toList();
-
-      return state.copy(changeHistory: changes);
-    } catch (e) {
-      throw UserException("Error fetching change history: $e");
-    }
-  }
-}
-
 ///Accesses the test case by its testCaseId
 /// and removes it from the Firestore database.
 class DeleteTestCaseAction extends ReduxAction<AppState> {
