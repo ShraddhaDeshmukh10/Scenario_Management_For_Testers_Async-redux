@@ -1,6 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
 import 'package:scenario_management_tool_for_testers/model/change_history.dart';
 
 class FetchChangeHistoryAction extends ReduxAction<AppState> {
@@ -17,6 +17,7 @@ class FetchChangeHistoryAction extends ReduxAction<AppState> {
           .doc(scenarioId)
           .collection('changes')
           .orderBy('timestamp', descending: true)
+          .limit(10)
           .get();
 
       List<ChangeHistory> changes = snapshot.docs.map((doc) {

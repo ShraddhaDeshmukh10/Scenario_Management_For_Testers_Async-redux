@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:scenario_management_tool_for_testers/helper/tag_helper.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/fetch_change_history.dart';
-import 'package:scenario_management_tool_for_testers/redux/actions/main_actions.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/testcase.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/comment_page/comment_page_connector.dart';
 

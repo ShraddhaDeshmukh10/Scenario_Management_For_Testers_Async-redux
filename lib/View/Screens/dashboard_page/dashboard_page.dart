@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
-import 'package:scenario_management_tool_for_testers/redux/view_model.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page/dash_viewmodel.dart';
 import 'package:scenario_management_tool_for_testers/widgets/app_bar_widget.dart';
 import 'package:scenario_management_tool_for_testers/widgets/drawer_widget.dart';
 import 'package:scenario_management_tool_for_testers/widgets/scenario_dialog.dart';
@@ -10,7 +10,7 @@ import 'package:scenario_management_tool_for_testers/widgets/test_case_dialog.da
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key, required this.vm}) : super(key: key);
 
-  final ViewModel vm;
+  final DashboardViewModel vm;
 
   @override
   Widget build(BuildContext context) {
@@ -74,9 +74,11 @@ class DashboardPage extends StatelessWidget {
           else
             Expanded(
               child: ListView.builder(
-                itemCount: vm.filteredScenarios.length,
+                itemCount: vm
+                    .filteredScenarios.length, // Use vm.filteredScenarios here
                 itemBuilder: (context, index) {
-                  final Scenario scenario = vm.filteredScenarios[index];
+                  final Scenario scenario = vm.filteredScenarios[
+                      index]; // Access filteredScenarios from vm
                   return Card(
                     shape: RoundedRectangleBorder(
                       borderRadius:
@@ -110,7 +112,6 @@ class DashboardPage extends StatelessWidget {
                       child: ListTile(
                         title: Text(
                           scenario.name ?? 'Unamed Scenario',
-                          // scenario.projectId ?? 'Not found Scenario ID',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -142,7 +143,6 @@ class DashboardPage extends StatelessWidget {
                                 "Add Test Case",
                                 style: TextStyle(
                                     color: vm.roleColor,
-                                    //color: Colors.black,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),

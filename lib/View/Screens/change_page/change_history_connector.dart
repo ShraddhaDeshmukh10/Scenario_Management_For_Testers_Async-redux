@@ -1,8 +1,8 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
-import 'package:scenario_management_tool_for_testers/model/change_history.dart';
+import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/fetch_change_history.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/change_page/change_viewmodel.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/change_page/edit_history_page.dart';
 
 class ChangeHistoryConnector extends StatelessWidget {
@@ -34,19 +34,6 @@ class ChangeHistoryConnector extends StatelessWidget {
           changes: viewModel.changeHistory,
         );
       },
-    );
-  }
-}
-
-class ChangeHistoryViewModel extends Vm {
-  final List<ChangeHistory> changeHistory;
-
-  ChangeHistoryViewModel({required this.changeHistory})
-      : super(equals: changeHistory);
-
-  static ChangeHistoryViewModel fromStore(Store<AppState> store) {
-    return ChangeHistoryViewModel(
-      changeHistory: store.state.changeHistory,
     );
   }
 }

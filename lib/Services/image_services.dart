@@ -3,7 +3,7 @@ import 'package:mime/mime.dart';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:scenario_management_tool_for_testers/Services/dataservice.dart';
+import 'package:scenario_management_tool_for_testers/Services/data_service.dart';
 import 'package:scenario_management_tool_for_testers/constants/response.dart'; // For MediaType
 
 class Services extends DataService {
@@ -89,60 +89,6 @@ class Services extends DataService {
       return DataResponse(data: null, err: 'Failed to upload image: $e');
     }
   }
-
-  // Future<DataResponse> performHTTPPOST(
-  //   String url, {
-  //   dynamic data,
-  //   Uint8List? fileBytes,
-  //   String? fileName,
-  // }) async {
-  //   try {
-  //     http.Response response;
-  //     if (fileBytes != null && fileName != null) {
-  //       String? mimeType = lookupMimeType(
-  //           fileName); // Lookup the MIME type based on the file extension
-  //       if (mimeType == null) {
-  //         return DataResponse(
-  //           data: null,
-  //           err: 'Could not determine file MIME type',
-  //         );
-  //       }
-  //       var mediaType = mimeType.split('/');
-
-  //       var request = http.MultipartRequest('POST', Uri.parse(url));
-  //       request.files.add(http.MultipartFile.fromBytes(
-  //         'image', // The key name for the file in the API (matches your cURL example)
-  //         fileBytes,
-  //         filename: fileName,
-  //         contentType: MediaType(mediaType[0], mediaType[1]),
-  //       ));
-
-  //       if (data != null) {
-  //         data.forEach((key, value) {
-  //           request.fields[key] = value.toString();
-  //         });
-  //       }
-
-  //       var streamedResponse = await request.send();
-  //       response = await http.Response.fromStream(streamedResponse);
-  //     } else {
-  //       response = await http.post(
-  //         Uri.parse(url),
-  //         headers: {'Content-Type': 'application/json'},
-  //         body: jsonEncode(data),
-  //       );
-  //     }
-
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       return DataResponse(data: jsonDecode(response.body), err: "");
-  //     } else {
-  //       return DataResponse(
-  //           data: null, err: 'Failed to upload image: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     return DataResponse(data: null, err: 'Failed to upload image: $e');
-  //   }
-  // }
 
   Future<DataResponse> performHTTPPUT(
       String url, Map<String, dynamic> data) async {

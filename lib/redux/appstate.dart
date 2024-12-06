@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scenario_management_tool_for_testers/constants/response.dart';
-import 'package:scenario_management_tool_for_testers/model/change_history.dart';
 import 'package:scenario_management_tool_for_testers/model/comments_model.dart';
+import 'package:scenario_management_tool_for_testers/model/change_history.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 
@@ -44,11 +44,8 @@ class AppState {
     DataResponse? response,
     User? user,
     String? designation,
-    //List<Map<String, dynamic>>? filteredScenarios,
-    //List<Map<String, dynamic>>? scenarios,
     List<Map<String, dynamic>>? addtestcase,
     final List<TestCase>? testCases,
-    //List<Map<String, dynamic>>? testCases,
     List<ChangeHistory>? changeHistory,
     List<Comment>? comments,
   }) =>

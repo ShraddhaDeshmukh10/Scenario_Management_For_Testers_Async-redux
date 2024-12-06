@@ -2,8 +2,9 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/change_page/change_history_connector.dart';
+import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page/dash_viewmodel.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page/dashboard_connector.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/scenario_page/scenario_connector.dart';
 import 'package:scenario_management_tool_for_testers/constants/locator.dart';
@@ -52,8 +53,14 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(builder: (_) => const RegisterPage());
               case Routes.dashboard:
                 return MaterialPageRoute(
-                  builder: (_) => const DashboardConnector(),
+                  builder: (_) => StoreConnector<AppState, DashboardViewModel>(
+                    converter: (store) => DashboardViewModel.fromStore(store),
+                    builder: (context, vm) {
+                      return DashboardConnector(vm: vm);
+                    },
+                  ),
                 );
+
               case Routes.editpagedetail:
                 return MaterialPageRoute(
                   builder: (_) => ChangeHistoryConnector(

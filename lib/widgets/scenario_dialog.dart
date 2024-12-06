@@ -4,11 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:scenario_management_tool_for_testers/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/fetch_senario.dart';
-import 'package:scenario_management_tool_for_testers/redux/view_model.dart';
 
-void addScenarioDialog(BuildContext context, ViewModel vm) {
+void addScenarioDialog(BuildContext context, vm) {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController shortDescriptionController =
       TextEditingController();

@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
-import 'package:scenario_management_tool_for_testers/Services/dataservice.dart';
-import 'package:scenario_management_tool_for_testers/Services/imageservices.dart';
+import 'package:scenario_management_tool_for_testers/Services/data_service.dart';
+import 'package:scenario_management_tool_for_testers/Services/image_services.dart';
 
 GetIt locator = GetIt.instance;
 
