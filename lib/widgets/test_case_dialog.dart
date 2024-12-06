@@ -6,10 +6,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/widgets/show_dialog.dart';
 
 void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
-  final nameController = TextEditingController();
-  final bugIdController = TextEditingController();
-  final commentsController = TextEditingController();
-  final descriptionController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController bugIdController = TextEditingController();
+  final TextEditingController commentsController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
   final String createdBy =
       FirebaseAuth.instance.currentUser?.email ?? 'unknown_user';
   String? selectedTag;
@@ -18,18 +19,22 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
       ? ["Passed", "Failed", "In Review"]
       : ["Passed", "Failed", "In Review", "Completed"];
 
-  showInputDialog(
+  DialogUtils.showInputDialog(
     context: context,
     title: "Add Test Case",
     children: [
       TextFormField(
-          controller: bugIdController,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(
-              labelText: "Test Case ID", hintText: "digits only")),
+        controller: bugIdController,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        decoration: const InputDecoration(
+          labelText: "Test Case ID",
+          hintText: "Digits only",
+        ),
+      ),
       TextFormField(
-          controller: nameController,
-          decoration: const InputDecoration(labelText: "Test Case Name")),
+        controller: nameController,
+        decoration: const InputDecoration(labelText: "Test Case Name"),
+      ),
       DropdownButtonFormField<String>(
         value: selectedTag,
         decoration: const InputDecoration(labelText: "Tags"),
@@ -39,18 +44,20 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
         onChanged: (value) => selectedTag = value,
       ),
       TextFormField(
-          controller: commentsController,
-          decoration: const InputDecoration(labelText: "Comments")),
+        controller: commentsController,
+        decoration: const InputDecoration(labelText: "Comments"),
+      ),
       TextFormField(
-          controller: descriptionController,
-          decoration: const InputDecoration(labelText: "Description")),
+        controller: descriptionController,
+        decoration: const InputDecoration(labelText: "Description"),
+      ),
     ],
     onSubmit: () async {
       if (bugIdController.text.isNotEmpty &&
           nameController.text.isNotEmpty &&
           selectedTag != null) {
         try {
-          // Check if the bugId already exists
+          // Check if the Test Case ID (bugId) already exists.
           final querySnapshot = await FirebaseFirestore.instance
               .collection('scenarios')
               .doc(scenarioId)
@@ -68,6 +75,7 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
               fontSize: 16.0,
             );
           } else {
+            // Create the new test case.
             final testCase = {
               'name': nameController.text,
               'bugId': bugIdController.text,
@@ -79,6 +87,7 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
               'createdBy': createdBy,
             };
 
+            // Save to Firestore.
             await FirebaseFirestore.instance
                 .collection('scenarios')
                 .doc(scenarioId)
@@ -87,7 +96,7 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
 
             Navigator.of(context).pop();
             Fluttertoast.showToast(
-              msg: "Test Case Added Succesfully",
+              msg: "Test Case Added Successfully",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               backgroundColor: Colors.black,
@@ -95,6 +104,7 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
               fontSize: 16.0,
             );
 
+            // Refresh the UI.
             vm.fetchScenarios();
           }
         } catch (e) {
@@ -104,7 +114,7 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
         }
       } else {
         Fluttertoast.showToast(
-          msg: "Please Fill all details!",
+          msg: "Please fill all required details!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           backgroundColor: Colors.black,

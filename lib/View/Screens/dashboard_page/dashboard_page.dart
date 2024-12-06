@@ -149,7 +149,8 @@ class DashboardPage extends StatelessWidget {
                             if (vm.designation != 'Junior Tester')
                               IconButton(
                                 onPressed: () {
-                                  deleteScenarioDialog(context, scenario.docId);
+                                  ScenarioDialogs.deleteScenarioDialog(
+                                      context, scenario.docId);
                                 },
                                 icon: Icon(Icons.delete),
                               ),
@@ -165,7 +166,7 @@ class DashboardPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        onPressed: () => addScenarioDialog(context, vm),
+        onPressed: () => ScenarioDialogs.addScenarioDialog(context, vm),
         child: Icon(Icons.add),
         backgroundColor: vm.roleColor,
         tooltip: 'Add Scenario',

@@ -72,7 +72,7 @@ class EditHistoryPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        buildInfoRow(
+                        CustomWidgets.buildInfoRow(
                           icon: Icons.assignment,
                           label: "Test Case ID",
                           value: testCaseId,
@@ -80,21 +80,21 @@ class EditHistoryPage extends StatelessWidget {
                               const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         if (tags != null)
-                          buildInfoRow(
+                          CustomWidgets.buildInfoRow(
                             icon: Icons.label,
                             label: "Tags",
                             value: tags.join(', '),
                             valueStyle:
                                 TextStyle(color: Helper.getTagColor(tags)),
                           ),
-                        buildInfoRow(
+                        CustomWidgets.buildInfoRow(
                           icon: Icons.edit,
                           label: "Edited By",
                           value: editedBy,
                           valueStyle: const TextStyle(
                               fontSize: 12, fontStyle: FontStyle.italic),
                         ),
-                        buildInfoRow(
+                        CustomWidgets.buildInfoRow(
                           icon: Icons.access_time,
                           label: "Timestamp",
                           value: timestamp,

@@ -6,7 +6,6 @@ import 'package:scenario_management_tool_for_testers/widgets/expanded_widget.dar
 
 ///This class takes scenario, roleColor, and designation as inputs, with scenario details rendered across various sections (Scenario Details, Test Cases, Comments, etc.).
 ///Conditional rendering using if allows certain actions only for lead tester and developer, such as viewing change history or deleting test cases.
-
 class ScenarioDetailPage extends StatelessWidget {
   final Map<String, dynamic> scenario;
   final Color roleColor;
@@ -29,8 +28,8 @@ class ScenarioDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(scenario['projectName'] ?? 'Scenario Detail'),
         backgroundColor: roleColor,
-        actions: [
-          if (designation != 'Junior Tester') ...[
+        actions: List<Widget>.of([
+          if (designation != 'Junior Tester')
             ElevatedButton(
               child: const Text(
                 "Show Edit History",
@@ -44,8 +43,7 @@ class ScenarioDetailPage extends StatelessWidget {
                 });
               },
             ),
-          ],
-        ],
+        ]),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
@@ -88,7 +86,7 @@ class ScenarioDetailPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildInfoRow(
+                      CustomWidgets.buildInfoRow(
                         icon: Icons.text_snippet,
                         label: "Scenario Name",
                         value: scenario['name'] ?? 'N/A',
@@ -96,20 +94,20 @@ class ScenarioDetailPage extends StatelessWidget {
                             const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      buildInfoRow(
+                      CustomWidgets.buildInfoRow(
                         icon: Icons.person,
                         label: "Assigned User",
                         value: scenario['assignedToEmail'] ?? 'N/A',
                         valueStyle: const TextStyle(color: Colors.blue),
                       ),
                       const SizedBox(height: 8),
-                      buildInfoRow(
+                      CustomWidgets.buildInfoRow(
                         icon: Icons.description,
                         label: "Description",
                         value: scenario['shortDescription'] ?? 'N/A',
                       ),
                       const SizedBox(height: 8),
-                      buildInfoRow(
+                      CustomWidgets.buildInfoRow(
                         icon: Icons.calendar_today,
                         label: "Created At",
                         value: scenario['createdAt'] != null
@@ -119,7 +117,7 @@ class ScenarioDetailPage extends StatelessWidget {
                         valueStyle: const TextStyle(fontSize: 12),
                       ),
                       const SizedBox(height: 8),
-                      buildInfoRow(
+                      CustomWidgets.buildInfoRow(
                         icon: Icons.email,
                         label: "Created By",
                         value: scenario['createdByEmail'] ?? 'N/A',

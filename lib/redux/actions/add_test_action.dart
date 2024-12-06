@@ -26,13 +26,11 @@ class AddTestCaseAction extends ReduxAction<AppState> {
     required this.attachment,
     this.tag,
   });
-
   @override
   Future<AppState?> reduce() async {
     final userEmail =
         FirebaseAuth.instance.currentUser?.email ?? 'unknown_user';
     try {
-      // Add the test case to Firestore
       DocumentReference docRef = await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(scenarioId)
@@ -50,7 +48,6 @@ class AddTestCaseAction extends ReduxAction<AppState> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // Create a local TestCase instance
       final newTestCase = TestCase(
         docId: docRef.id,
         name: testCaseName,
@@ -62,8 +59,9 @@ class AddTestCaseAction extends ReduxAction<AppState> {
         createdAt: DateTime.now(), // Assume `serverTimestamp` gets synced later
       );
 
-      // Update the state with the new test case
-      final updatedTestCases = [...state.testCases, newTestCase];
+      final updatedTestCases = List<TestCase>.from(state.testCases);
+      updatedTestCases.add(newTestCase);
+
       return state.copy(testCases: updatedTestCases);
     } catch (e) {
       print("Error adding test case: $e");

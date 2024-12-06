@@ -49,7 +49,9 @@ class FirebaseService {
           .get();
 
       return snapshot.docs.map((doc) {
-        return {'docId': doc.id, ...doc.data() as Map<String, dynamic>};
+        final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['docId'] = doc.id; // Add the document ID to the map
+        return data;
       }).toList();
     } catch (e) {
       print("Error fetching test cases for scenario $scenarioId: $e");

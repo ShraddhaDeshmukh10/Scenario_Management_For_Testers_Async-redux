@@ -34,3 +34,22 @@ class UpdateScenarioAction extends ReduxAction<AppState> {
     return state.copy(scenarios: updatedScenarios);
   }
 }
+
+class AddScenarioAction extends ReduxAction<AppState> {
+  final Scenario newScenario;
+
+  AddScenarioAction(this.newScenario);
+
+  @override
+  Future<AppState> reduce() async {
+    try {
+      await FirebaseService().addScenarioToFirebase(newScenario);
+      List<Scenario> updatedScenarios = List.from(state.scenarios)
+        ..add(newScenario);
+      return state.copy(scenarios: updatedScenarios);
+    } catch (e) {
+      print("Error adding scenario to Redux store: $e");
+      throw Exception("Failed to add scenario");
+    }
+  }
+}
