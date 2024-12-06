@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:scenario_management_tool_for_testers/resources/route.dart';
 import 'package:scenario_management_tool_for_testers/widgets/show_dialog.dart';
 
 void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
@@ -103,9 +104,10 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
               textColor: Colors.white,
               fontSize: 16.0,
             );
+            Navigator.pushNamed(context, Routes.dashboard);
 
-            // Refresh the UI.
-            vm.fetchScenarios();
+            // // Refresh the UI.
+            // vm.fetchScenarios();
           }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
