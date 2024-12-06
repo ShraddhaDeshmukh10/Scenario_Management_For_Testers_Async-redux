@@ -3,7 +3,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/login_actions.dart';
-import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {

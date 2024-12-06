@@ -4,7 +4,7 @@ import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/register_auth_action.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/reset.dart';
-import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

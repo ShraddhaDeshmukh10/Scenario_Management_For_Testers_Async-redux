@@ -1,6 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/add_comment.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/comment_page/comment_view.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/comment_page/test_comment_page.dart';

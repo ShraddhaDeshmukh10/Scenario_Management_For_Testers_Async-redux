@@ -1,7 +1,7 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
 
 class RegisterAction extends ReduxAction<AppState> {
   final String email;

@@ -4,7 +4,7 @@ import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/testcase.dart';
 import 'package:scenario_management_tool_for_testers/view/screens/scenario_page/scenario_detail.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
-import 'package:scenario_management_tool_for_testers/redux/appstate.dart';
+import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
 
 class ScenarioDetailConnector extends StatelessWidget {
   final Scenario scenario;
