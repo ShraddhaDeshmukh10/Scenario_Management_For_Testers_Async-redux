@@ -1,7 +1,7 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:scenario_management_tool_for_testers/firebase/firebasesevices.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
-import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 
 class UpdateScenarioAction extends ReduxAction<AppState> {
   final String docId;
@@ -32,24 +32,5 @@ class UpdateScenarioAction extends ReduxAction<AppState> {
     }).toList();
 
     return state.copy(scenarios: updatedScenarios);
-  }
-}
-
-class AddScenarioAction extends ReduxAction<AppState> {
-  final Scenario newScenario;
-
-  AddScenarioAction(this.newScenario);
-
-  @override
-  Future<AppState> reduce() async {
-    try {
-      await FirebaseService().addScenarioToFirebase(newScenario);
-      List<Scenario> updatedScenarios = List.from(state.scenarios)
-        ..add(newScenario);
-      return state.copy(scenarios: updatedScenarios);
-    } catch (e) {
-      print("Error adding scenario to Redux store: $e");
-      throw Exception("Failed to add scenario");
-    }
   }
 }

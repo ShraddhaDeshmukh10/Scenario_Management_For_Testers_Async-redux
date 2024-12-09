@@ -1,9 +1,10 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
+import 'package:scenario_management_tool_for_testers/redux/actions/fetch_comment.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/add_comment.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/comment_page/comment_view.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/comment_page/test_comment_page.dart';
+import 'package:scenario_management_tool_for_testers/screens/comment_screen/comment_view.dart';
+import 'package:scenario_management_tool_for_testers/screens/comment_screen/test_comment_page.dart';
 
 class TestCaseCommentsConnector extends StatelessWidget {
   final String scenarioId;

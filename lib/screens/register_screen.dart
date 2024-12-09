@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:async_redux/async_redux.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
+import 'package:scenario_management_tool_for_testers/constants/enum_status.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/register_auth_action.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/reset.dart';
-import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

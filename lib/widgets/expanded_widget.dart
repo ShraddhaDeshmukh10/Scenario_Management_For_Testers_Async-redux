@@ -7,7 +7,7 @@ import 'package:scenario_management_tool_for_testers/helper/tag_helper.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/fetch_change_history.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/testcase.dart';
 import 'package:scenario_management_tool_for_testers/main.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/comment_page/comment_page_connector.dart';
+import 'package:scenario_management_tool_for_testers/screens/comment_screen/comment_page_connector.dart';
 
 class ExpandableTestCaseCard extends StatefulWidget {
   final Map<String, dynamic> testCase;

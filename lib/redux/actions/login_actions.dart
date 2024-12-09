@@ -1,7 +1,8 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
+import 'package:scenario_management_tool_for_testers/constants/enum_status.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 
 class LoginAction extends ReduxAction<AppState> {
   final String email;
@@ -38,12 +39,5 @@ class LoginAction extends ReduxAction<AppState> {
     } catch (e) {
       return null;
     }
-  }
-}
-
-class SetLoginStatusAction extends ReduxAction<AppState> {
-  @override
-  AppState reduce() {
-    return state.copy(loginStatus: LoginStatus.idle);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:scenario_management_tool_for_testers/redux/app_state.dart';
+import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/constants/enum_role.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 import 'package:scenario_management_tool_for_testers/model/testcase_model.dart';

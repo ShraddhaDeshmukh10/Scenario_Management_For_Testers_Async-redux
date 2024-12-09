@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
-import 'package:scenario_management_tool_for_testers/view/screens/dashboard_page/dash_viewmodel.dart';
+import 'package:scenario_management_tool_for_testers/screens/dashboard_screen/dash_viewmodel.dart';
 import 'package:scenario_management_tool_for_testers/widgets/app_bar_widget.dart';
 import 'package:scenario_management_tool_for_testers/widgets/drawer_widget.dart';
 import 'package:scenario_management_tool_for_testers/widgets/scenario_dialog.dart';
