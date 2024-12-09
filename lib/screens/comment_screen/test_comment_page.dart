@@ -13,7 +13,7 @@ import 'package:scenario_management_tool_for_testers/model/comments_model.dart';
 
 class TestCaseCommentsDisplay extends StatefulWidget {
   final List<Comment> comments;
-  final Function(String) addComment;
+  final Function(String, String?) addComment;
   final Color roleColor;
   final String designation;
 
@@ -44,7 +44,7 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
         textColor: Colors.white,
       );
     } else {
-      widget.addComment(commentText);
+      widget.addComment(commentText, imageUrl);
       comment1Controller.clear();
       if (imageUrl != null) {
         // Handle image URL with the comment, if needed

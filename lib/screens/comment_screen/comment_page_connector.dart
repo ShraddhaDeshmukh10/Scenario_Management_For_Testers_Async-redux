@@ -25,10 +25,12 @@ class TestCaseCommentsConnector extends StatelessWidget {
     return StoreConnector<AppState, CommentViewModel>(
       converter: (store) => CommentViewModel(
         comments: store.state.comments,
-        addComment: (commentText) => store.dispatch(AddCommentToTestCaseAction(
+        addComment: (commentText, imageUrl) =>
+            store.dispatch(AddCommentToTestCaseAction(
           scenarioId: scenarioId,
           testCaseId: testCaseId,
           text: commentText,
+          attachment: imageUrl, // Pass the image URL here
         )),
         fetchComments: () => store.dispatch(FetchTestCaseCommentsAction(
           scenarioId: scenarioId,
