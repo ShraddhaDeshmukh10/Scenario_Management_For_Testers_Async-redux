@@ -50,6 +50,7 @@ dependencies:
   http_parser: ^4.0.2
   file_picker: ^8.0.5
   flutter_launcher_icons: ^0.14.1
+  flutter_redux: ^0.10.0
 
 
 flutter_launcher_icons:

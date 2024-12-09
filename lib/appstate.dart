@@ -83,6 +83,9 @@ class AppState {
   final List<TestCase> testCases;
   final List<ChangeHistory> changeHistory;
   final DataResponse? response;
+  final String? email; // Add email
+  final String? password; // Add password
+  final bool isLoading;
 
   AppState({
     this.registrationStatus = RegistrationStatus.idle,
@@ -95,6 +98,9 @@ class AppState {
     this.comments = const [],
     required this.testCases,
     required this.changeHistory,
+    this.email, // Add email to constructor
+    this.password, // Add password to constructor
+    this.isLoading = false,
   });
 
   AppState copy({
@@ -108,6 +114,9 @@ class AppState {
     final List<TestCase>? testCases,
     List<ChangeHistory>? changeHistory,
     List<Comment>? comments,
+    String? email, // Add email parameter to copy method
+    String? password, // Add password parameter to copy method
+    bool? isLoading,
   }) =>
       AppState(
         registrationStatus: registrationStatus ?? this.registrationStatus,
@@ -120,6 +129,9 @@ class AppState {
         comments: comments ?? this.comments,
         testCases: testCases ?? this.testCases,
         changeHistory: changeHistory ?? this.changeHistory,
+        email: email ?? this.email, // Update email
+        password: password ?? this.password, // Update password
+        isLoading: isLoading ?? this.isLoading,
       );
 
   static AppState initialState() => AppState(
@@ -131,5 +143,8 @@ class AppState {
         changeHistory: [],
         comments: [],
         testCases: [],
+        email: null, // Initialize email as null
+        password: null, // Initialize password as null
+        isLoading: false,
       );
 }

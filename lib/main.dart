@@ -6,9 +6,9 @@ import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/screens/change_screen/change_history_connector.dart';
 import 'package:scenario_management_tool_for_testers/screens/dashboard_screen/dash_viewmodel.dart';
 import 'package:scenario_management_tool_for_testers/screens/dashboard_screen/dashboard_connector.dart';
+import 'package:scenario_management_tool_for_testers/screens/login_screen/login_connector.dart';
 import 'package:scenario_management_tool_for_testers/screens/scenario_screen/scenario_connector.dart';
 import 'package:scenario_management_tool_for_testers/constants/locator.dart';
-import 'package:scenario_management_tool_for_testers/screens/login.dart';
 import 'package:scenario_management_tool_for_testers/screens/register_screen.dart';
 import 'package:scenario_management_tool_for_testers/screens/splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
               case Routes.splash:
                 return MaterialPageRoute(builder: (_) => const SplashScreen());
               case Routes.login:
-                return MaterialPageRoute(builder: (_) => const LoginPage());
+                return MaterialPageRoute(builder: (_) => LoginConnector());
               case Routes.register:
                 return MaterialPageRoute(builder: (_) => const RegisterPage());
               case Routes.dashboard:
@@ -80,7 +80,8 @@ class MyApp extends StatelessWidget {
                 );
 
               default:
-                return MaterialPageRoute(builder: (_) => const LoginPage());
+                return MaterialPageRoute(
+                    builder: (_) => const LoginConnector());
             }
           }),
     );

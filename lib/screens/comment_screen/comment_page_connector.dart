@@ -30,7 +30,7 @@ class TestCaseCommentsConnector extends StatelessWidget {
           scenarioId: scenarioId,
           testCaseId: testCaseId,
           text: commentText,
-          attachment: imageUrl, // Pass the image URL here
+          attachment: imageUrl,
         )),
         fetchComments: () => store.dispatch(FetchTestCaseCommentsAction(
           scenarioId: scenarioId,
