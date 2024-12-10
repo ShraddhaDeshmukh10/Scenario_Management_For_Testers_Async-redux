@@ -9,43 +9,6 @@ import 'package:scenario_management_tool_for_testers/screens/login_screen/login.
 import 'package:scenario_management_tool_for_testers/screens/login_screen/login_vm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// class LoginConnector extends StatelessWidget {
-//   const LoginConnector({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return StoreConnector<AppState, LoginViewModel>(
-//       converter: (store) => LoginViewModel.fromStore(store),
-//       onDidChange: (context, store, vm) {
-//         if (context != null && store.state.loginStatus == LoginStatus.success) {
-//           ScaffoldMessenger.of(context).showSnackBar(
-//             const SnackBar(content: Text("Login successful! Redirecting...")),
-//           );
-//           Future.delayed(const Duration(seconds: 2), () {
-//             Navigator.pushNamedAndRemoveUntil(
-//                 context, Routes.dashboard, (route) => false);
-//             store.dispatch(SetLoginStatusAction());
-//           });
-//         } else if (context != null &&
-//             store.state.loginStatus == LoginStatus.failure) {
-//           ScaffoldMessenger.of(context).showSnackBar(
-//             const SnackBar(content: Text("Login failed! Please try again.")),
-//           );
-//           store.dispatch(SetLoginStatusAction());
-//         }
-//       },
-//       builder: (context, vm) {
-//         return LoginPage(
-//           emailController: TextEditingController(text: vm.email),
-//           passwordController: TextEditingController(text: vm.password),
-//           isLoading: vm.isLoading,
-//           onLogin: vm.login,
-//         );
-//       },
-//     );
-//   }
-// }
-
 class LoginConnector extends StatelessWidget {
   const LoginConnector({super.key});
 

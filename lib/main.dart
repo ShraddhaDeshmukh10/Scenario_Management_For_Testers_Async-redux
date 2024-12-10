@@ -7,9 +7,9 @@ import 'package:scenario_management_tool_for_testers/screens/change_screen/chang
 import 'package:scenario_management_tool_for_testers/screens/dashboard_screen/dash_viewmodel.dart';
 import 'package:scenario_management_tool_for_testers/screens/dashboard_screen/dashboard_connector.dart';
 import 'package:scenario_management_tool_for_testers/screens/login_screen/login_connector.dart';
+import 'package:scenario_management_tool_for_testers/screens/register_screen/register_connector.dart';
 import 'package:scenario_management_tool_for_testers/screens/scenario_screen/scenario_connector.dart';
 import 'package:scenario_management_tool_for_testers/constants/locator.dart';
-import 'package:scenario_management_tool_for_testers/screens/register_screen.dart';
 import 'package:scenario_management_tool_for_testers/screens/splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase/firebase_options.dart';
@@ -50,7 +50,8 @@ class MyApp extends StatelessWidget {
               case Routes.login:
                 return MaterialPageRoute(builder: (_) => LoginConnector());
               case Routes.register:
-                return MaterialPageRoute(builder: (_) => const RegisterPage());
+                return MaterialPageRoute(
+                    builder: (_) => const RegisterConnector());
               case Routes.dashboard:
                 return MaterialPageRoute(
                   builder: (_) => StoreConnector<AppState, DashboardViewModel>(
