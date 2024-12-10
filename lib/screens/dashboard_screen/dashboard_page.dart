@@ -149,8 +149,7 @@ class DashboardPage extends StatelessWidget {
                             if (vm.designation != 'Junior Tester')
                               IconButton(
                                 onPressed: () {
-                                  ScenarioDialogs.deleteScenarioDialog(
-                                      context, scenario.docId);
+                                  deleteScenarioDialog(context, scenario.docId);
                                 },
                                 icon: Icon(Icons.delete),
                               ),

@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/resources/route.dart';
 import 'package:scenario_management_tool_for_testers/widgets/show_dialog.dart';
 
-void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
+void addTestCaseDialog(BuildContext context, String scenarioId, dynamic vm) {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bugIdController = TextEditingController();
   final TextEditingController commentsController = TextEditingController();
@@ -23,6 +23,7 @@ void addTestCaseDialog(BuildContext context, String scenarioId, vm) {
   DialogUtils.showInputDialog(
     context: context,
     title: "Add Test Case",
+    designation: vm.designation, // Pass the designation from vm
     children: [
       TextFormField(
         controller: bugIdController,
