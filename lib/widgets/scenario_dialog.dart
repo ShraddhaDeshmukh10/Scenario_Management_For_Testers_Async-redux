@@ -35,6 +35,7 @@ class ScenarioDialogs {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text(
             "Add Scenario",
             style: TextStyle(color: userRole.roleColor),

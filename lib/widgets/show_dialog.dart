@@ -15,6 +15,7 @@ class DialogUtils {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text(
             title,
             style: TextStyle(color: userRole.roleColor),
