@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:scenario_management_tool_for_testers/Resources/route.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/screens/change_screen/change_history_connector.dart';
-import 'package:scenario_management_tool_for_testers/screens/dashboard_screen/dash_viewmodel.dart';
 import 'package:scenario_management_tool_for_testers/screens/dashboard_screen/dashboard_connector.dart';
 import 'package:scenario_management_tool_for_testers/screens/login_screen/login_connector.dart';
 import 'package:scenario_management_tool_for_testers/screens/register_screen/register_connector.dart';
@@ -48,18 +47,23 @@ class MyApp extends StatelessWidget {
               case Routes.splash:
                 return MaterialPageRoute(builder: (_) => const SplashScreen());
               case Routes.login:
-                return MaterialPageRoute(builder: (_) => LoginConnector());
+                return MaterialPageRoute(
+                    builder: (_) => const LoginConnector());
               case Routes.register:
                 return MaterialPageRoute(
                     builder: (_) => const RegisterConnector());
+              // case Routes.dashboard:
+              //   return MaterialPageRoute(
+              //     builder: (_) => StoreConnector<AppState, DashboardViewModel>(
+              //       converter: (store) => DashboardViewModel.fromStore(store),
+              //       builder: (context, vm) {
+              //         return DashboardConnector(vm: vm);
+              //       },
+              //     ),
+              //   );
               case Routes.dashboard:
                 return MaterialPageRoute(
-                  builder: (_) => StoreConnector<AppState, DashboardViewModel>(
-                    converter: (store) => DashboardViewModel.fromStore(store),
-                    builder: (context, vm) {
-                      return DashboardConnector(vm: vm);
-                    },
-                  ),
+                  builder: (_) => const DashboardConnector(),
                 );
 
               case Routes.editpagedetail:

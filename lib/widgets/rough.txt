@@ -1,12 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
-import 'package:scenario_management_tool_for_testers/helper/tag_helper.dart';
-import 'package:scenario_management_tool_for_testers/redux/actions/fetch_change_history.dart';
-import 'package:scenario_management_tool_for_testers/redux/actions/testcase.dart';
-import 'package:scenario_management_tool_for_testers/screens/comment_screen/comment_page_connector.dart';
 
 class ExpandableTestCaseCard extends StatefulWidget {
   final Map<String, dynamic> testCase;
@@ -31,47 +22,14 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('scenarios')
-          .doc(widget.scenarioId)
-          .collection('testCases')
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    final testCase = widget.testCase;
 
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-
-        final testCases = snapshot.data?.docs ?? [];
-
-        return Container(
-          height: 500,
-          width: 500,
-          child: ListView.builder(
-            itemCount: testCases.length,
-            itemBuilder: (context, index) {
-              final testCase = testCases[index].data() as Map<String, dynamic>;
-              final docId = testCases[index].id;
-
-              return _buildTestCaseCard(testCase, docId);
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildTestCaseCard(Map<String, dynamic> testCase, String docId) {
     final designation = widget.designation;
     final tagColor = Helper.getTagColor(testCase['tags']);
+
     final createdAt = testCase['createdAt'];
     final formattedDate = createdAt != null
-        ? DateFormat("dd-MM-yyyy, hh:mm a")
-            .format((createdAt as Timestamp).toDate())
+        ? DateFormat("dd-MM-yyyy, hh:mm a").format(createdAt)
         : 'N/A';
 
     final descriptionController =
@@ -84,7 +42,6 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
             : null;
 
     final tagsOptions = ["Passed", "Failed", "In Review", "Completed"];
-
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0), // Card border radius
@@ -160,7 +117,8 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               MaterialPageRoute(
                                 builder: (context) => TestCaseCommentsConnector(
                                   scenarioId: widget.scenarioId,
-                                  testCaseId: docId,
+                                  testCaseId: testCase[
+                                      'docId'], // Ensure 'docId' is correct key
                                   roleColor: widget.roleColor,
                                   designation: designation,
                                 ),
@@ -174,7 +132,8 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                             tooltip: "Delete",
                             color: Colors.red,
                             icon: const Icon(Icons.delete),
-                            onPressed: () => _deleteTestCase(docId, testCase),
+                            onPressed: () =>
+                                _deleteTestCase(testCase['docId'], testCase),
                           ),
                         IconButton(
                           color: Colors.blue,
@@ -212,7 +171,7 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               return;
                             }
 
-                            if (docId == null) {
+                            if (testCase['docId'] == null) {
                               Fluttertoast.showToast(
                                 msg: "Test case ID is missing!",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -229,15 +188,17 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               final user = FirebaseAuth.instance.currentUser;
                               final userEmail = user?.email ?? "Unknown User";
 
+                              final testCaseId = testCase['docId'];
+
                               print(
-                                  "Attempting to save test case with ID: $docId");
+                                  "Attempting to save test case with ID: $testCaseId");
 
                               // Update test case data
                               await FirebaseFirestore.instance
                                   .collection('scenarios')
                                   .doc(widget.scenarioId)
                                   .collection('testCases')
-                                  .doc(docId)
+                                  .doc(testCaseId)
                                   .update({
                                 'description': description,
                                 'comments': comments,
@@ -257,6 +218,10 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                               });
                               FetchTestCasesAction(widget.scenarioId);
                               FetchChangeHistoryAction(widget.scenarioId);
+                              // store.dispatch(
+                              //     FetchTestCasesAction(widget.scenarioId));
+                              // store.dispatch(
+                              //     FetchChangeHistoryAction(widget.scenarioId));
 
                               Fluttertoast.showToast(
                                 msg: "Test case saved successfully!",
@@ -307,17 +272,20 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: DropdownButtonFormField<String>(
-                          value: selectedTag,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Tags",
-                          ),
-                          items: tagsOptions
-                              .map((tag) => DropdownMenuItem(
-                                  value: tag, child: Text(tag)))
-                              .toList(),
-                          onChanged: (value) => selectedTag = value),
+                        value: selectedTag,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Tags",
+                        ),
+                        items: tagsOptions
+                            .map((tag) =>
+                                DropdownMenuItem(value: tag, child: Text(tag)))
+                            .toList(),
+                        onChanged: (value) => selectedTag = value,
+                      ),
                     ),
+
+                    /// Non-editable fields
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
@@ -371,7 +339,7 @@ class _ExpandableTestCaseCardState extends State<ExpandableTestCaseCard> {
           .doc(testCaseId)
           .delete();
       FetchTestCasesAction(widget.scenarioId);
-
+      //store.dispatch(FetchTestCasesAction(widget.scenarioId));
       Fluttertoast.showToast(
         msg: "Test case deleted successfully!",
         toastLength: Toast.LENGTH_SHORT,

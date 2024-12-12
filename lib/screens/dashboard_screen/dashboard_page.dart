@@ -111,10 +111,10 @@ class DashboardPage extends StatelessWidget {
                       ),
                       child: ListTile(
                         title: Text(
-                          scenario.name ?? 'Unamed Scenario',
+                          scenario.projectName ?? 'Unamed Project',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: 14,
                           ),
                         ),
                         onTap: () {
@@ -130,7 +130,7 @@ class DashboardPage extends StatelessWidget {
                         },
                         subtitle: Text(
                           scenario.shortDescription ?? 'N/A',
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(fontSize: 11),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,

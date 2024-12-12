@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:async_redux/async_redux.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/constants/enum_status.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/login_actions.dart';
@@ -15,7 +16,6 @@ class LoginConnector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Wrapping your entire screen with a Scaffold to ensure ScaffoldMessenger can work
       body: StoreConnector<AppState, LoginViewModel>(
         converter: (store) {
           return LoginViewModel(
@@ -28,26 +28,15 @@ class LoginConnector extends StatelessWidget {
           );
         },
         onDidChange: (context, store, vm) {
-          // Ensure context is not null by checking it before use
-          if (context != null) {
-            if (store.state.loginStatus == LoginStatus.success) {
-              // Safely use ScaffoldMessenger with non-null context
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text("Login successful! Redirecting...")),
-              );
-              Future.delayed(const Duration(seconds: 2), () {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, Routes.dashboard, (route) => false);
-                store.dispatch(SetLoginStatusAction());
-              });
-            } else if (store.state.loginStatus == LoginStatus.failure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text("Login failed! Please try again.")),
-              );
-              store.dispatch(SetLoginStatusAction());
-            }
+          if (store.state.loginStatus == LoginStatus.success) {
+            Navigator.pushNamedAndRemoveUntil(
+                context!, Routes.dashboard, (route) => false);
+            store.dispatch(SetLoginStatusAction());
+            Fluttertoast.showToast(msg: "Login Succesfull!! Welcome");
+          } else if (store.state.loginStatus == LoginStatus.failure) {
+            store.dispatch(SetLoginStatusAction());
+            Fluttertoast.showToast(
+                msg: "Login Failed!!.Recheck Useremail and Paassword");
           }
         },
         builder: (context, vm) {
@@ -76,7 +65,6 @@ class LoginConnector extends StatelessWidget {
     );
   }
 
-  // Load the LoginViewModel asynchronously
   Future<LoginViewModel> _loadLoginViewModel(LoginViewModel vm) async {
     final prefs = await SharedPreferences.getInstance();
     final savedEmail = prefs.getString('username') ?? '';

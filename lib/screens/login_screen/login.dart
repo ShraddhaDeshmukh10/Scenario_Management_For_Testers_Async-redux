@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/resources/route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,23 +39,40 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    String email = widget.emailController.text.trim();
+    String password = widget.passwordController.text.trim();
+
+    if (email.isEmpty) {
+      Fluttertoast.showToast(msg: "Email cannot be empty.");
+      return;
+    }
+
+    if (password.isEmpty) {
+      Fluttertoast.showToast(msg: "Password cannot be empty.");
+      return;
+    }
+
+    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)) {
+      Fluttertoast.showToast(msg: "Invalid email format.");
+      return;
+    }
+
+    if (password.length < 6) {
+      Fluttertoast.showToast(msg: "Password must be at least 6 characters.");
+      return;
+    }
+
     setState(() {
-      isLoading = true; // Show loading indicator
+      isLoading = true;
     });
 
     try {
-      await widget.onLogin(
-        widget.emailController.text,
-        widget.passwordController.text,
-      );
+      await widget.onLogin(email, password);
 
-      await _saveLoginInfo(
-        widget.emailController.text,
-        widget.passwordController.text,
-      );
+      await _saveLoginInfo(email, password);
     } finally {
       setState(() {
-        isLoading = false; // Hide loading indicator
+        isLoading = true;
       });
     }
   }
@@ -121,10 +139,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ),
         ],
