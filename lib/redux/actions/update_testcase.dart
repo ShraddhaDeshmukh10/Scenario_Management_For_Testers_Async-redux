@@ -18,10 +18,12 @@ class UpdateTestCaseAction extends ReduxAction<AppState> {
     required this.comments,
     required this.tags,
   });
-
   @override
   Future<AppState?> reduce() async {
     try {
+      // Ensure the tags are cast to List<String>
+      final updatedTags = List<String>.from(tags);
+
       // Update test case in Firestore
       await FirebaseFirestore.instance
           .collection('scenarios')
@@ -31,7 +33,7 @@ class UpdateTestCaseAction extends ReduxAction<AppState> {
           .update({
         'description': description,
         'comments': comments,
-        'tags': tags,
+        'tags': updatedTags, // Ensure it's a List<String>
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
@@ -45,19 +47,19 @@ class UpdateTestCaseAction extends ReduxAction<AppState> {
           .add({
         'testCaseId': testCaseId,
         'description': description,
-        'tags': tags,
+        'tags': updatedTags, // Ensure it's a List<String>
         'editedBy': userEmail,
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      // Update the local state
+      // Update the local state with the updated tags
       final updatedTestCases = state.testCases.map((testCase) {
         if (testCase.docId == testCaseId) {
           return TestCase(
             docId: testCase.docId,
             name: testCase.name,
             bugId: testCase.bugId,
-            tags: tags,
+            tags: updatedTags,
             comments: comments,
             description: description,
             createdBy: testCase.createdBy,

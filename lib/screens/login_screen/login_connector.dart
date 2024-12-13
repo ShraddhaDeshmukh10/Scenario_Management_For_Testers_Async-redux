@@ -32,11 +32,11 @@ class LoginConnector extends StatelessWidget {
             Navigator.pushNamedAndRemoveUntil(
                 context!, Routes.dashboard, (route) => false);
             store.dispatch(SetLoginStatusAction());
-            Fluttertoast.showToast(msg: "Login Succesfull!! Welcome");
+            Fluttertoast.showToast(msg: "Login Successful! Welcome");
           } else if (store.state.loginStatus == LoginStatus.failure) {
             store.dispatch(SetLoginStatusAction());
             Fluttertoast.showToast(
-                msg: "Login Failed!!.Recheck Useremail and Paassword");
+                msg: "Login Failed! Please recheck email and password.");
           }
         },
         builder: (context, vm) {
@@ -51,6 +51,12 @@ class LoginConnector extends StatelessWidget {
 
               final viewModel = snapshot.data!;
 
+              if (viewModel.email.isNotEmpty && viewModel.password.isNotEmpty) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  vm.login(viewModel.email, viewModel.password);
+                });
+                return const Center(child: CircularProgressIndicator());
+              }
               return LoginPage(
                 emailController: TextEditingController(text: viewModel.email),
                 passwordController:
