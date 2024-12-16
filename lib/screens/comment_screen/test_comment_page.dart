@@ -46,9 +46,7 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
     } else {
       widget.addComment(commentText, imageUrl);
       comment1Controller.clear();
-      if (imageUrl != null) {
-        // Handle image URL with the comment, if needed
-      }
+      if (imageUrl != null) {}
     }
   }
 

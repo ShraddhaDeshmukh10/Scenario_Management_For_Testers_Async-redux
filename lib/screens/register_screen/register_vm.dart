@@ -5,8 +5,8 @@ class RegisterViewModel {
   TextEditingController emailController;
   TextEditingController passwordController;
   TextEditingController confirmPasswordController;
-  bool isLoading; // Make this non-final
-  String? designation; // Make this non-final
+  bool isLoading;
+  String? designation;
   RegistrationStatus? registrationStatus;
   final Function(String, String, String) register;
 

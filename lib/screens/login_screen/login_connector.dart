@@ -10,8 +10,15 @@ import 'package:scenario_management_tool_for_testers/screens/login_screen/login.
 import 'package:scenario_management_tool_for_testers/screens/login_screen/login_vm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginConnector extends StatelessWidget {
+class LoginConnector extends StatefulWidget {
   const LoginConnector({super.key});
+
+  @override
+  _LoginConnectorState createState() => _LoginConnectorState();
+}
+
+class _LoginConnectorState extends State<LoginConnector> {
+  bool _hasAttemptedLogin = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +36,19 @@ class LoginConnector extends StatelessWidget {
         },
         onDidChange: (context, store, vm) {
           if (store.state.loginStatus == LoginStatus.success) {
-            Navigator.pushNamedAndRemoveUntil(
-                context!, Routes.dashboard, (route) => false);
             store.dispatch(SetLoginStatusAction());
             Fluttertoast.showToast(msg: "Login Successful! Welcome");
+            Navigator.pushNamedAndRemoveUntil(
+                context!, Routes.dashboard, (route) => false);
           } else if (store.state.loginStatus == LoginStatus.failure) {
             store.dispatch(SetLoginStatusAction());
             Fluttertoast.showToast(
                 msg: "Login Failed! Please recheck email and password.");
           }
         },
-        builder: (context, vm) {
+        builder: (context, viewModel) {
           return FutureBuilder<LoginViewModel>(
-            future: _loadLoginViewModel(vm),
+            future: _loadLoginViewModel(viewModel),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -49,18 +56,23 @@ class LoginConnector extends StatelessWidget {
                 return const Center(child: Text('Error loading login info.'));
               }
 
-              final viewModel = snapshot.data!;
+              final loginViewModel = snapshot.data!;
 
-              if (viewModel.email.isNotEmpty && viewModel.password.isNotEmpty) {
+              if (!_hasAttemptedLogin &&
+                  loginViewModel.email.isNotEmpty &&
+                  loginViewModel.password.isNotEmpty) {
+                _hasAttemptedLogin = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  vm.login(viewModel.email, viewModel.password);
+                  viewModel.login(
+                      loginViewModel.email, loginViewModel.password);
                 });
-                return const Center(child: CircularProgressIndicator());
               }
+
               return LoginPage(
-                emailController: TextEditingController(text: viewModel.email),
+                emailController:
+                    TextEditingController(text: loginViewModel.email),
                 passwordController:
-                    TextEditingController(text: viewModel.password),
+                    TextEditingController(text: loginViewModel.password),
                 isLoading: viewModel.isLoading,
                 onLogin: viewModel.login,
               );

@@ -138,10 +138,9 @@ class ScenarioDetailPage extends StatelessWidget {
               const Text("No test cases found")
             else
               Container(
-                height: 0.6 * h,
+                height: 0.9 * h,
                 child: ListView.builder(
                   shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: testCases.length,
                   itemBuilder: (context, index) {
                     final testCase = testCases[index];

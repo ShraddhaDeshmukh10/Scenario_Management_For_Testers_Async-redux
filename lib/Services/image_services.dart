@@ -8,11 +8,6 @@ import 'package:scenario_management_tool_for_testers/constants/response.dart'; /
 
 class Services extends DataService {
   final fileUploadUrl = "https://dev.orderbookings.com/api/image-test-upload";
-  // @override
-  // Future<Response> uploadFile(Uint8List? fileBytes, String? fileName) {
-  //   return performHTTPPOST(fileUploadUrl,
-  //       fileBytes: fileBytes, fileName: fileName);
-  // }
 
   Future<DataResponse> performHTTPGET(String url) async {
     try {

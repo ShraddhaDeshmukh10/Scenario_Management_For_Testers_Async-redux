@@ -43,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
     widget.viewModel.register(
       widget.viewModel.emailController.text,
       widget.viewModel.passwordController.text,
-      widget.viewModel.designation!, // Safe after validation
+      widget.viewModel.designation!,
     );
   }
 

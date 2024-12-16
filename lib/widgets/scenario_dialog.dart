@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scenario_management_tool_for_testers/constants/enum_role.dart';
+import 'package:scenario_management_tool_for_testers/model/scenario_model.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/delete_senario.dart';
 import 'package:scenario_management_tool_for_testers/appstate.dart';
 import 'package:scenario_management_tool_for_testers/redux/actions/fetch_senario.dart';
@@ -194,56 +195,91 @@ class ScenarioDialogs {
   }
 }
 
-/// Shows a dialog to confirm deletion of a scenario.
-void deleteScenarioDialog(BuildContext context, String docId) {
+void deleteScenarioDialog(BuildContext context, Scenario scenario) {
+  bool isDeleting = false;
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Delete Scenario'),
-        content: const Text('Are you sure you want to delete this scenario?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              try {
-                StoreProvider.dispatch<AppState>(
-                    context, DeleteScenarioAction(docId));
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Delete Scenario'),
+            content: isDeleting
+                ? Row(
+                    children: const [
+                      CircularProgressIndicator(),
+                      SizedBox(width: 16),
+                      Text(
+                        "Please wait, deleting...",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  )
+                : Text(
+                    'Are you sure you want to delete the scenario "${scenario.name}"?',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+            actions: isDeleting
+                ? []
+                : [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        setState(() {
+                          isDeleting = true;
+                        });
 
-                Navigator.of(context).pop();
-                Fluttertoast.showToast(
-                  msg: "Scenario Deleted successfully!",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
-                StoreProvider.dispatch<AppState>(
-                    context, FetchScenariosAction());
-              } catch (e) {
-                Fluttertoast.showToast(
-                  msg: "Failed to delete Scenario!",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
-              }
-            },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
+                        try {
+                          await StoreProvider.dispatchAndWait<AppState>(
+                            context,
+                            DeleteScenarioAction(scenario.docId),
+                          );
+
+                          Fluttertoast.showToast(
+                            msg:
+                                "Scenario '${scenario.name}' deleted successfully!",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
+                          StoreProvider.dispatch<AppState>(
+                            context,
+                            FetchScenariosAction(),
+                          );
+
+                          Navigator.of(context).pop();
+                        } catch (e) {
+                          Fluttertoast.showToast(
+                            msg:
+                                "Failed to delete scenario '${scenario.name}'!",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
+                        } finally {
+                          setState(() {
+                            isDeleting = false;
+                          });
+                        }
+                      },
+                      child: const Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+          );
+        },
       );
     },
   );
