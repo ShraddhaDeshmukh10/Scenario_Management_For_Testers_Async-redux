@@ -11,7 +11,6 @@ class FetchChangeHistoryAction extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
     try {
-      // Fetch data from Firestore
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(scenarioId)

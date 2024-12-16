@@ -45,7 +45,7 @@ class Services extends DataService {
 
         var request = http.MultipartRequest('POST', Uri.parse(url));
         request.files.add(http.MultipartFile.fromBytes(
-          'image', // Ensure the backend expects this key
+          'image',
           fileBytes,
           filename: fileName,
           contentType: MediaType(mediaType[0], mediaType[1]),
@@ -131,7 +131,6 @@ class Services extends DataService {
       fileName: fileName,
     );
     if (result.data != null) {
-      // Convert the response to an HTTP Response object if needed
       return http.Response(jsonEncode(result.data), 200);
     } else {
       return http.Response(jsonEncode({'error': result.err}), 400);

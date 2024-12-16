@@ -15,7 +15,6 @@ class Comment {
     this.attachment,
   });
 
-  // Factory method to create a Comment object from Firestore data
   factory Comment.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Comment(
@@ -27,7 +26,6 @@ class Comment {
     );
   }
 
-  // Convert Comment object to Firestore-compatible map
   Map<String, dynamic> toMap() {
     return {
       'text': text,

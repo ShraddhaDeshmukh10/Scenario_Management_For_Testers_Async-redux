@@ -23,7 +23,7 @@ void addTestCaseDialog(BuildContext context, String scenarioId, dynamic vm) {
   DialogUtils.showInputDialog(
     context: context,
     title: "Add Test Case",
-    designation: vm.designation, // Pass the designation from vm
+    designation: vm.designation,
     children: [
       TextFormField(
         controller: bugIdController,
@@ -59,7 +59,6 @@ void addTestCaseDialog(BuildContext context, String scenarioId, dynamic vm) {
           nameController.text.isNotEmpty &&
           selectedTag != null) {
         try {
-          // Check if the Test Case ID (bugId) already exists.
           final querySnapshot = await FirebaseFirestore.instance
               .collection('scenarios')
               .doc(scenarioId)
@@ -77,7 +76,6 @@ void addTestCaseDialog(BuildContext context, String scenarioId, dynamic vm) {
               fontSize: 16.0,
             );
           } else {
-            // Create the new test case.
             final testCase = {
               'name': nameController.text,
               'bugId': bugIdController.text,
@@ -89,7 +87,6 @@ void addTestCaseDialog(BuildContext context, String scenarioId, dynamic vm) {
               'createdBy': createdBy,
             };
 
-            // Save to Firestore.
             await FirebaseFirestore.instance
                 .collection('scenarios')
                 .doc(scenarioId)
@@ -106,9 +103,6 @@ void addTestCaseDialog(BuildContext context, String scenarioId, dynamic vm) {
               fontSize: 16.0,
             );
             Navigator.pushNamed(context, Routes.dashboard);
-
-            // // Refresh the UI.
-            // vm.fetchScenarios();
           }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(

@@ -21,7 +21,6 @@ class Scenario {
     required this.createdAt,
   });
 
-  // Factory method to create a Scenario object from Firestore data
   factory Scenario.fromFirestore(String id, Map<String, dynamic> data) {
     return Scenario(
       docId: id,
@@ -35,7 +34,6 @@ class Scenario {
     );
   }
 
-  // Convert Scenario object to Firestore-compatible map
   Map<String, dynamic> toFirestore() {
     return {
       'projectName': projectName,
@@ -44,12 +42,10 @@ class Scenario {
       'assignedToEmail': assignedToEmail,
       'createdByEmail': createdByEmail,
       'projectId': projectId,
-      'createdAt': Timestamp.fromDate(
-          createdAt), // Ensure DateTime is converted to Timestamp
+      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 
-  // Convert Scenario object to a general-purpose map for UI
   Map<String, dynamic> toMap() {
     return {
       'docId': docId,

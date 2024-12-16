@@ -10,7 +10,6 @@ class DeleteScenarioAction extends ReduxAction<AppState> {
   @override
   Future<AppState> reduce() async {
     try {
-      await Future.delayed(const Duration(seconds: 5));
       await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(docId)

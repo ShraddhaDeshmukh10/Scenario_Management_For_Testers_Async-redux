@@ -13,15 +13,12 @@ class DeleteTestCaseAction extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
     try {
-      // Delete the test case from Firestore
       await FirebaseFirestore.instance
           .collection('scenarios')
           .doc(scenarioId)
           .collection('testCases')
           .doc(testCaseId)
           .delete();
-
-      // Update local state
       final updatedTestCases = state.testCases
           .where((testCase) => testCase.docId != testCaseId)
           .toList();

@@ -43,7 +43,7 @@ class AddTestCaseAction extends ReduxAction<AppState> {
         'comments': comments,
         'description': description,
         'attachment': attachment,
-        'tags': [tag ?? 'Unspecified'], // Store as an array
+        'tags': [tag ?? 'Unspecified'],
         'createdBy': userEmail,
         'createdAt': FieldValue.serverTimestamp(),
       });
@@ -56,7 +56,7 @@ class AddTestCaseAction extends ReduxAction<AppState> {
         comments: comments,
         description: description,
         createdBy: userEmail,
-        createdAt: DateTime.now(), // Assume `serverTimestamp` gets synced later
+        createdAt: DateTime.now(),
       );
 
       final updatedTestCases = List<TestCase>.from(state.testCases);

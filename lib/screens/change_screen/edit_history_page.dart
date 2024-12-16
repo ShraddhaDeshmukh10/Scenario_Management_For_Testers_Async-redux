@@ -33,11 +33,7 @@ class EditHistoryPage extends StatelessWidget {
               itemCount: changes.length,
               itemBuilder: (context, index) {
                 final change = changes[index];
-                final testCaseId = change.testCaseId ??
-                    "Unknown"; // This will now be the Bug ID
-
-                // final testCaseId =
-                //     change.testCaseId ?? "Unknown"; // Ensure ID is present
+                final testCaseId = change.testCaseId ?? "Unknown";
                 final tags = change.tags;
                 final editedBy = change.editedBy;
                 final timestamp = DateFormat("dd-MM-yyyy hh:mm a")

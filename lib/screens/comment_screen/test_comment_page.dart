@@ -75,7 +75,7 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
                           _pickImage(context, (url) {
                             setState(() {
                               imageUrl =
-                                  url; // Correctly updates the imageUrl state
+                                  url; 
                             });
                           });
                         },
@@ -105,8 +105,6 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
                       final createdBy = comment.createdBy;
                       final currentUser =
                           FirebaseAuth.instance.currentUser?.email;
-
-                      // Determine if the comment is from the current user
                       bool isCurrentUser = createdBy == currentUser;
 
                       return Padding(
@@ -116,25 +114,23 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
                           mainAxisAlignment: isCurrentUser
                               ? MainAxisAlignment.end
                               : MainAxisAlignment.start,
-                          children: [
-                            // Comment Container with background color and alignment based on the user
-                            Flexible(
+                          children: [ Flexible(
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: isCurrentUser
                                       ? Colors.lightBlue
-                                          .shade100 // Current user's comment color
+                                          .shade100 
                                       : Colors.grey
-                                          .shade200, // Other users' comment color
+                                          .shade200,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: isCurrentUser
                                       ? CrossAxisAlignment
-                                          .end // Align text to the right for current user
+                                          .end 
                                       : CrossAxisAlignment
-                                          .start, // Align text to the left for others
+                                          .start, 
                                   children: [
                                     Text(
                                       comment.text,
@@ -157,8 +153,7 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
                             ),
                             const SizedBox(width: 8),
                             _buildAvatar(imageUrl,
-                                context), // Display avatar for every comment
-                          ],
+                                context), 
                         ),
                       );
                     },
