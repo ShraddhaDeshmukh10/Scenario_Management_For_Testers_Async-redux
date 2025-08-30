@@ -6,8 +6,7 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
-      android_signing:
-        - keystore_reference
+
       vars:
         FLUTTER_BUILD_ARGS: "--release --flavor production"
 
