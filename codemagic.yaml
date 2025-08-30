@@ -1,0 +1,44 @@
+workflows:
+  android-workflow:
+    name: Android Release Build
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable # Use the 'stable' channel of Flutter
+      xcode: latest # Use the latest available Xcode version
+      cocoapods: default # Use the default CocoaPods version
+      android_signing:
+        - keystore_reference # Reference to your uploaded Android keystore
+      vars:
+        FLUTTER_BUILD_ARGS: "--release --flavor production" # Build arguments for Flutter
+
+    triggering:
+      branch_patterns:
+        - pattern: master
+          include: true
+
+    scripts:
+      - name: Set up Flutter
+        script: |
+          flutter channel $FLUTTER_CHANNEL
+          flutter doctor
+
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+
+      - name: Run tests
+        script: |
+          flutter test
+
+      - name: Build Android App
+        script: |
+          flutter build appbundle $FLUTTER_BUILD_ARGS
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+
+    publishing:
+      google_play:
+        credentials: Encrypted(GOOGLE_PLAY_SERVICE_ACCOUNT_KEY) # Your encrypted JSON key
+        track: production

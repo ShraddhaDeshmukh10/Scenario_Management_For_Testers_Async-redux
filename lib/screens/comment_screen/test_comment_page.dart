@@ -74,8 +74,7 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
                         onPressed: () {
                           _pickImage(context, (url) {
                             setState(() {
-                              imageUrl =
-                                  url; 
+                              imageUrl = url;
                             });
                           });
                         },
@@ -111,50 +110,46 @@ class _TestCaseCommentsDisplayState extends State<TestCaseCommentsDisplay> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 5, horizontal: 10),
                         child: Row(
-                          mainAxisAlignment: isCurrentUser
-                              ? MainAxisAlignment.end
-                              : MainAxisAlignment.start,
-                          children: [ Flexible(
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: isCurrentUser
-                                      ? Colors.lightBlue
-                                          .shade100 
-                                      : Colors.grey
-                                          .shade200,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: isCurrentUser
-                                      ? CrossAxisAlignment
-                                          .end 
-                                      : CrossAxisAlignment
-                                          .start, 
-                                  children: [
-                                    Text(
-                                      comment.text,
-                                      style: const TextStyle(fontSize: 15),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      formattedDate,
-                                      style: const TextStyle(
-                                          fontSize: 10, color: Colors.grey),
-                                    ),
-                                    Text(
-                                      "By: $createdBy",
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    ),
-                                  ],
+                            mainAxisAlignment: isCurrentUser
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: isCurrentUser
+                                        ? Colors.lightBlue.shade100
+                                        : Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: isCurrentUser
+                                        ? CrossAxisAlignment.end
+                                        : CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        comment.text,
+                                        style: const TextStyle(fontSize: 15),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        formattedDate,
+                                        style: const TextStyle(
+                                            fontSize: 10, color: Colors.grey),
+                                      ),
+                                      Text(
+                                        "By: $createdBy",
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildAvatar(imageUrl,
-                                context), 
-                        ),
+                              const SizedBox(width: 8),
+                              _buildAvatar(imageUrl, context),
+                            ]),
                       );
                     },
                   ),
